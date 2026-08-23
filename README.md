@@ -1,6 +1,6 @@
 # Graphify Knowledge Graph Auditing Subsystem
 
-`internal/graphify` is the core AST verification and documentation integrity engine for Gautama Social. It provides deterministic code relationship validation for Go and Python source files and comprehensive Markdown link graph auditing to ensure accurate, robust knowledge graphs (`graphify-out/graph.json` and `graphify-out/doc_graph_audit.json`).
+`gautama-graph` is the core AST verification and documentation integrity engine for Gautama Social. It provides deterministic code relationship validation for Go and Python source files and comprehensive Markdown link graph auditing to ensure accurate, robust knowledge graphs (`graphify-out/graph.json` and `graphify-out/doc_graph_audit.json`).
 
 ---
 
@@ -8,7 +8,7 @@
 
 Automated knowledge graph extractors often generate heuristic or unverified relationship candidates between source files and symbols, resulting in **phantom edges** (relationships that do not exist in the actual AST). Additionally, fast-paced documentation workflows can introduce **broken relative links** and **orphan documentation files** (documents with degree 0).
 
-`internal/graphify` solves these problems by providing:
+`gautama-graph` solves these problems by providing:
 1. **Deterministic AST Code Auditing**: Parses Go (`go/ast`) and Python (`ast` module) source files to verify that candidate function calls, method invocations, and selector expressions actually exist in code, pruning phantom relationships from the graph.
 2. **Markdown Documentation Graph Auditing**: Scans all workspace Markdown files, resolves relative link paths against disk targets, identifies dead links, and calculates node connectivity degrees to flag orphaned documents.
 3. **Atomic Graph Persistence**: Updates knowledge graph artifacts atomically using temporary files and safe renames to prevent corruption.
@@ -25,7 +25,7 @@ flowchart TD
         DOC_CLI["cmd/graphify-doc-audit"]
     end
 
-    subgraph Core ["internal/graphify/auditor"]
+    subgraph Core ["internal/auditor"]
         Engine["Engine (engine.go)"]
         Parser["ASTParser (parser.go)"]
         Evaluator["SelectorEvaluator (evaluator.go)"]

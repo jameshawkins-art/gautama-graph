@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"gautama-graph/internal/auditor"
+	"github.com/jameshawkins-art/gautama-graph/internal/auditor"
 )
 
 func main() {

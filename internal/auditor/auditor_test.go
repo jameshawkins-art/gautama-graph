@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"gautama-graph/internal/auditor"
+	"github.com/jameshawkins-art/gautama-graph/internal/auditor"
 )
 
 func TestASTInferredRelationshipAuditor(t *testing.T) {

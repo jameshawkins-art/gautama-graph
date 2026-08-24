@@ -221,9 +221,16 @@ func NewDefaultDocGraphStore() *DefaultDocGraphStore {
 	return &DefaultDocGraphStore{}
 }
 
-// SaveDocAuditReport saves the audited report atomically to targetPath.
+// SaveDocAuditReport saves the audited report atomically to targetPath using two-phase commit.
 func (s *DefaultDocGraphStore) SaveDocAuditReport(ctx context.Context, outputPath string, report *DocAuditReport) error {
-	dir := filepath.Dir(outputPath)
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
+	cleanOutput := filepath.Clean(outputPath)
+	dir := filepath.Dir(cleanOutput)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("failed creating output directory: %w", err)
 	}
@@ -233,7 +240,17 @@ func (s *DefaultDocGraphStore) SaveDocAuditReport(ctx context.Context, outputPat
 		return fmt.Errorf("failed marshaling doc audit report: %w", err)
 	}
 
-	return os.WriteFile(outputPath, data, 0644)
+	tmpFile := cleanOutput + ".tmp"
+	if err := os.WriteFile(tmpFile, data, 0644); err != nil {
+		return fmt.Errorf("failed writing tmp doc audit report at %s: %w", tmpFile, err)
+	}
+
+	if err := os.Rename(tmpFile, cleanOutput); err != nil {
+		_ = os.Remove(tmpFile)
+		return fmt.Errorf("atomic rename failed for %s: %w", cleanOutput, err)
+	}
+
+	return nil
 }
 
 // DocGraphAuditor implements DocGraphAuditorService.

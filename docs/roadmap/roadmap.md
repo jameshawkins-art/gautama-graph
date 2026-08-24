@@ -40,7 +40,7 @@ flowchart LR
 | :---: | :--- | :--- | :---: | :---: |
 | **001** | [Encapsulated Graphify Binary Manager & Single-Entrypoint Orchestrator](./encapsulated-graphify-binary-runner-roadmap-001.md) | `@feature-engineer.md`, `@security-auditor.md`, `@nexus.md` | Milestone 1 (V1.1.0) | `(🟢 COMPLETED V1.1.0)` |
 | **002** | [Deep AST Multi-Package Import & Interface Implementation Resolution](./deep-ast-multi-package-import-roadmap-002.md) | `@feature-engineer.md`, `@regression-tester.md` | Milestone 2 (V1.2.0) | `(🟢 COMPLETED V1.2.0)` |
-| **003** | Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool | `@feature-engineer.md`, `@debugger-remediation.md` | Milestone 3 (V1.3.0) | `(🔴 NOT STARTED)` |
+| **003** | [Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool](./streaming-ast-ipc-bridge-roadmap-003.md) | `@feature-engineer.md`, `@debugger-remediation.md` | Milestone 3 (V1.3.0) | `(🟢 COMPLETED V1.3.0)` |
 | **004** | Markdown Doc Link Auto-Remediation & Circular Cycle Detector | `@feature-engineer.md`, `@security-auditor.md` | Milestone 4 (V1.4.0) | `(🔴 NOT STARTED)` |
 
 ---
@@ -54,6 +54,10 @@ flowchart LR
 ### Item 002: Deep AST Multi-Package Import & Interface Implementation Resolution
 - **Specification Document**: [`docs/roadmap/deep-ast-multi-package-import-roadmap-002.md`](./deep-ast-multi-package-import-roadmap-002.md)
 - **Primary Goal**: Expand AST relationship auditing from isolated single-file traversal to a workspace-wide multi-package compilation and type-checking engine. Parse `ast.Package` compilation units (`go/parser.ParseDir`), build a global exported symbol index, resolve package aliases, and use `go/types` method-set comparisons to deterministically prove implicit interface implementations (`RESOLVED_INTERFACE_IMPL`) and cross-package calls (`RESOLVED_CROSS_PACKAGE_CALL`).
+
+### Item 003: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool
+- **Specification Document**: [`docs/roadmap/streaming-ast-ipc-bridge-roadmap-003.md`](./streaming-ast-ipc-bridge-roadmap-003.md)
+- **Primary Goal**: Replace ephemeral, one-shot Python subprocess execution with a high-throughput, persistent subprocess worker daemon pool (`internal/auditor/ipc_bridge.go` and `python/ast_daemon.py`). Communicate over bidirectional non-blocking Newline-Delimited JSON (NDJSON) pipes with heartbeat monitoring, crash auto-recovery, concurrency scaling, and zero orphaned zombie processes.
 
 ---
 

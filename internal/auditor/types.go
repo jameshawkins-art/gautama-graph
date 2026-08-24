@@ -145,6 +145,84 @@ type PythonASTBridge interface {
 	AuditPythonCandidates(ctx context.Context, targetFile string, candidates []CandidateEdge) ([]AuditedEdge, error)
 }
 
+// IPCCommand defines the discrete action requested of the Python daemon worker.
+type IPCCommand string
+
+const (
+	// CmdPing verifies daemon liveness and measures IPC round-trip latency.
+	CmdPing IPCCommand = "PING"
+	// CmdAuditPythonCandidates instructs the worker to evaluate candidate edges against Python source AST.
+	CmdAuditPythonCandidates IPCCommand = "AUDIT_CANDIDATES"
+	// CmdShutdown signals the worker process to terminate cleanly with exit code 0.
+	CmdShutdown IPCCommand = "SHUTDOWN"
+)
+
+// WorkerState models the lifecycle state machine of an IPC worker daemon.
+type WorkerState string
+
+const (
+	WorkerStateStarting   WorkerState = "STARTING"
+	WorkerStateIdle       WorkerState = "IDLE"
+	WorkerStateBusy       WorkerState = "BUSY"
+	WorkerStateCrashed    WorkerState = "CRASHED"
+	WorkerStateTerminated WorkerState = "TERMINATED"
+)
+
+// IPCRequest represents a single NDJSON message sent over stdin to a Python worker.
+type IPCRequest struct {
+	ID            string          `json:"id"`
+	Command       IPCCommand      `json:"command"`
+	WorkspaceRoot string          `json:"workspace_root"`
+	SourceFile    string          `json:"source_file,omitempty"`
+	Candidates    []CandidateEdge `json:"candidates,omitempty"`
+	Timestamp     time.Time       `json:"timestamp"`
+}
+
+// IPCResponse represents the single NDJSON message received over stdout from a Python worker.
+type IPCResponse struct {
+	ID           string        `json:"id"`
+	Success      bool          `json:"success"`
+	Error        string        `json:"error,omitempty"`
+	AuditedEdges []AuditedEdge `json:"audited_edges,omitempty"`
+	DurationMs   float64       `json:"duration_ms"`
+}
+
+// WorkerStats captures telemetry for an individual daemon process.
+type WorkerStats struct {
+	WorkerID      int         `json:"worker_id"`
+	PID           int         `json:"pid"`
+	State         WorkerState `json:"state"`
+	RequestsTotal int64       `json:"requests_total"`
+	ErrorsTotal   int64       `json:"errors_total"`
+	RestartsTotal int64       `json:"restarts_total"`
+	LastActive    time.Time   `json:"last_active"`
+}
+
+// PoolStats provides aggregated operational health metrics across the worker pool.
+type PoolStats struct {
+	TotalWorkers int           `json:"total_workers"`
+	IdleWorkers  int           `json:"idle_workers"`
+	BusyWorkers  int           `json:"busy_workers"`
+	Workers      []WorkerStats `json:"workers"`
+}
+
+// IPCSession encapsulates an active bi-directional streaming pipe session to a child daemon.
+type IPCSession interface {
+	Send(ctx context.Context, req *IPCRequest) (*IPCResponse, error)
+	Ping(ctx context.Context) (time.Duration, error)
+	Status() WorkerState
+	PID() int
+	Close() error
+}
+
+// IPCWorkerPool supervises, load-balances, and auto-recovers a pool of persistent Python worker daemons.
+type IPCWorkerPool interface {
+	AuditPython(ctx context.Context, sourceFile string, candidates []CandidateEdge) ([]AuditedEdge, error)
+	SpawnWorkers(ctx context.Context, poolSize int) error
+	Stats() PoolStats
+	Close() error
+}
+
 // GraphStore handles atomic persistence of audited edge metadata into graphify-out/graph.json.
 type GraphStore interface {
 	SaveAuditedEdges(ctx context.Context, targetPath string, edges []AuditedEdge) error

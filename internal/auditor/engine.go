@@ -18,6 +18,7 @@ type Engine struct {
 	crossEvaluator CrossPackageEvaluator
 	ifaceResolver  InterfaceResolver
 	pyBridge       PythonASTBridge
+	ipcPool        IPCWorkerPool
 	store          GraphStore
 	cfg            Config
 }
@@ -38,6 +39,7 @@ func NewEngine(p ASTParser, e SelectorEvaluator, s GraphStore, cfg Config) *Engi
 		crossEvaluator: NewDefaultCrossPackageEvaluator(idx),
 		ifaceResolver:  NewDefaultInterfaceResolver(idx),
 		pyBridge:       NewDefaultPythonASTBridge(cfg.WorkspaceRootPath),
+		ipcPool:        NewDefaultIPCWorkerPool(cfg.WorkspaceRootPath, "python/ast_daemon.py", 4),
 		store:          s,
 		cfg:            cfg,
 	}
@@ -62,6 +64,7 @@ func NewDefaultEngine(cfg Config) *Engine {
 		crossEvaluator: NewDefaultCrossPackageEvaluator(idx),
 		ifaceResolver:  NewDefaultInterfaceResolver(idx),
 		pyBridge:       NewDefaultPythonASTBridge(cfg.WorkspaceRootPath),
+		ipcPool:        NewDefaultIPCWorkerPool(cfg.WorkspaceRootPath, "python/ast_daemon.py", 4),
 		store:          NewJSONGraphStore(),
 		cfg:            cfg,
 	}
@@ -70,6 +73,11 @@ func NewDefaultEngine(cfg Config) *Engine {
 // SetPythonBridge allows overriding the PythonASTBridge adapter (e.g. for testing).
 func (e *Engine) SetPythonBridge(b PythonASTBridge) {
 	e.pyBridge = b
+}
+
+// SetIPCPool allows overriding or injecting the IPCWorkerPool adapter.
+func (e *Engine) SetIPCPool(p IPCWorkerPool) {
+	e.ipcPool = p
 }
 
 // SetIndexer allows overriding the PackageSymbolIndexer adapter.
@@ -89,6 +97,14 @@ func (e *Engine) SetInterfaceResolver(ir InterfaceResolver) {
 	e.ifaceResolver = ir
 }
 
+// Close gracefully terminates background daemon worker processes and resources.
+func (e *Engine) Close() error {
+	if e.ipcPool != nil {
+		return e.ipcPool.Close()
+	}
+	return nil
+}
+
 // AuditCandidates audits a list of CandidateEdge candidates against Go and Python AST specifications.
 func (e *Engine) AuditCandidates(ctx context.Context, candidates []CandidateEdge) ([]AuditedEdge, error) {
 	ctx, cancel := context.WithTimeout(ctx, e.cfg.AuditorTimeout)
@@ -102,25 +118,33 @@ func (e *Engine) AuditCandidates(ctx context.Context, candidates []CandidateEdge
 		default:
 		}
 
+		absSource := cand.SourceFile
+		if !filepath.IsAbs(absSource) && e.cfg.WorkspaceRootPath != "" {
+			absSource = filepath.Join(e.cfg.WorkspaceRootPath, cand.SourceFile)
+		}
+
 		if strings.HasSuffix(cand.SourceFile, ".py") {
-			if e.pyBridge != nil {
-				pyResults, err := e.pyBridge.AuditPythonCandidates(ctx, cand.SourceFile, []CandidateEdge{cand})
-				if err == nil && len(pyResults) > 0 {
-					results = append(results, pyResults...)
-					continue
-				}
+			var pyResults []AuditedEdge
+			var pyErr error
+
+			if e.ipcPool != nil {
+				pyResults, pyErr = e.ipcPool.AuditPython(ctx, absSource, []CandidateEdge{cand})
 			}
+			if (pyErr != nil || len(pyResults) == 0) && e.pyBridge != nil {
+				pyResults, pyErr = e.pyBridge.AuditPythonCandidates(ctx, absSource, []CandidateEdge{cand})
+			}
+
+			if pyErr == nil && len(pyResults) > 0 {
+				results = append(results, pyResults...)
+				continue
+			}
+
 			results = append(results, AuditedEdge{
 				CandidateEdge:    cand,
 				ProvenanceStatus: string(ProvenanceInferredHeuristic),
 				Confidence:       0.5,
 			})
 			continue
-		}
-
-		absSource := cand.SourceFile
-		if !filepath.IsAbs(absSource) && e.cfg.WorkspaceRootPath != "" {
-			absSource = filepath.Join(e.cfg.WorkspaceRootPath, cand.SourceFile)
 		}
 
 		fileAST, _, err := e.parser.ParseFile(ctx, absSource)
@@ -396,7 +420,7 @@ func (e *Engine) AuditGraphFile(ctx context.Context, graphPath string, verbose b
 		}
 	}
 
-	// Audit Python Candidates via Subprocess Bridge
+	// Audit Python Candidates via Persistent IPC Worker Pool
 	for srcFile, cands := range pyCandidates {
 		absPath := srcFile
 		if !filepath.IsAbs(absPath) && e.cfg.WorkspaceRootPath != "" {
@@ -405,10 +429,12 @@ func (e *Engine) AuditGraphFile(ctx context.Context, graphPath string, verbose b
 
 		var pyAudited []AuditedEdge
 		var pyErr error
-		if e.pyBridge != nil {
+
+		if e.ipcPool != nil {
+			pyAudited, pyErr = e.ipcPool.AuditPython(ctx, absPath, cands)
+		}
+		if (pyErr != nil || len(pyAudited) == 0) && e.pyBridge != nil {
 			pyAudited, pyErr = e.pyBridge.AuditPythonCandidates(ctx, absPath, cands)
-		} else {
-			pyErr = fmt.Errorf("python bridge not configured")
 		}
 
 		if pyErr != nil {

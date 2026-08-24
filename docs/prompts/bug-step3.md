@@ -1,0 +1,53 @@
+[.agents/personas/nexus.md](../../.agents/personas/nexus.md) [.agents/personas/debugger-remediation.md](../../.agents/personas/debugger-remediation.md) [.agents/personas/regression-tester.md](../../.agents/personas/regression-tester.md) [.agents/personas/security-auditor.md](../../.agents/personas/security-auditor.md)
+
+## CONTEXT & OBJECTIVE
+Execute Phase B3 (Test-Driven Bug Remediation & Regression Verification) and Phase B4 (SQA Certification & Defect Closure) of the Gautama Graph Bug Remediation Lifecycle for the approved bug blueprint in `docs/bugs/` (e.g. `docs/bugs/bug-<description>-<id>.md`).
+
+You are tasked with applying the minimal surgical code fix, proving that the failing reproduction test turns green, running the full test suite with race detection (`-race`), executing knowledge graph sync (`./scripts/graphify_sync.sh`), updating the bug specification status to `CLOSED (🟢 RESOLVED)`, and creating or updating `walkthrough.md`.
+
+---
+
+## 🔒 STEP B3 CONTEXT ISOLATION & PROGRESSIVE DISCLOSURE
+To prevent **context rot** and token bloat:
+- **Active Personas**: `nexus` ([@nexus.md](../../.agents/personas/nexus.md)), `debugger-remediation` ([@debugger-remediation.md](../../.agents/personas/debugger-remediation.md)), `regression-tester` ([@regression-tester.md](../../.agents/personas/regression-tester.md)), `security-auditor` ([@security-auditor.md](../../.agents/personas/security-auditor.md)).
+- **Injected Skills**: `skills/debugger-remediation` ([SKILL.md](../../.agents/skills/debugger-remediation/SKILL.md)), `skills/regression-tester` ([SKILL.md](../../.agents/skills/regression-tester/SKILL.md)).
+- **Excluded Context**: New feature specifications, pre-SDLC roadmaps, unimpacted subsystem implementations.
+
+---
+
+## 🕸️ MANDATORY GRAPHIFY DISCOVERY & POST-FIX GRAPH SYNC
+1. **Graphify Discovery (Token Optimization)**: Query `graphify path` or `graphify explain` to review call chains before editing code.
+2. **Post-Fix Graph Sync**: After applying the fix, the agent team MUST run `graphify update .` followed by `go run cmd/graphify-ast-audit/main.go` (or `./scripts/graphify_sync.sh`) to prune phantom edges and verify graph health.
+
+---
+
+## 🛑 PHASE B3 & B4 EXECUTION CONSTRAINTS
+1. **Test-Driven Discipline**: The minimal reproduction test written in Phase B1 MUST fail before the fix and pass cleanly after applying the patch.
+2. **Full Test Suite Verification**: `GOWORK=off go test -v -race ./internal/auditor/...` MUST pass 100% with zero race conditions.
+3. **Artifact Output**: Update the target bug specification document (`docs/bugs/bug-<description>-<id>.md`) status to `CLOSED (🟢 RESOLVED)`, emit `remediation_meta.json`, and update `walkthrough.md`.
+4. **Phase Boundary Rule**: Completing Phase B3 & B4 certifies bug resolution, regression immunity, and defect closure.
+
+---
+
+## 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
+
+### 1. Targeted Code Remediation (`@debugger-remediation.md`)
+- Apply the minimal, surgical Go or Python patch strictly confined to the faulting execution path.
+- Ensure error wrapping with context, immediate mutex unlock deferrals, and stream hygiene with `scanner.Err()` checks.
+- Emit machine-readable meta-artifact `remediation_meta.json`.
+
+### 2. Regression & SQA Verification (`@regression-tester.md`)
+- Execute the isolated reproduction test to confirm green pass.
+- Run full regression suite: `GOWORK=off go test -timeout 30s -v -race ./internal/auditor/...`.
+- Validate that statement coverage on modified packages remains $\ge 85\%$.
+
+### 3. Security Check & Defect Closure (`@security-auditor.md`, `@nexus.md`)
+- Verify zero-trust path containment, zero `unsafe`/cgo, and sanitized subprocess calls.
+- Run `./scripts/graphify_sync.sh` to update `graphify-out/graph.json` and `graphify-out/doc_graph_audit.json`.
+- Update bug specification status in `docs/bugs/bug-<description>-<id>.md` to `CLOSED (🟢 RESOLVED)`.
+- Create or update `walkthrough.md` summarizing the defect, root cause, surgical patch diff, and verification test outputs.
+
+---
+
+## 📄 OUTPUT FILE REQUIREMENT
+Provide clickable file links to the updated bug specification document (`docs/bugs/bug-<description>-<id>.md`), `remediation_meta.json`, and `walkthrough.md`.

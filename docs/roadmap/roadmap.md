@@ -41,7 +41,7 @@ flowchart LR
 | **001** | [Encapsulated Graphify Binary Manager & Single-Entrypoint Orchestrator](./encapsulated-graphify-binary-runner-roadmap-001.md) | `@feature-engineer.md`, `@security-auditor.md`, `@nexus.md` | Milestone 1 (V1.1.0) | `(🟢 COMPLETED V1.1.0)` |
 | **002** | [Deep AST Multi-Package Import & Interface Implementation Resolution](./deep-ast-multi-package-import-roadmap-002.md) | `@feature-engineer.md`, `@regression-tester.md` | Milestone 2 (V1.2.0) | `(🟢 COMPLETED V1.2.0)` |
 | **003** | [Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool](./streaming-ast-ipc-bridge-roadmap-003.md) | `@feature-engineer.md`, `@debugger-remediation.md` | Milestone 3 (V1.3.0) | `(🟢 COMPLETED V1.3.0)` |
-| **004** | Markdown Doc Link Auto-Remediation & Circular Cycle Detector | `@feature-engineer.md`, `@security-auditor.md` | Milestone 4 (V1.4.0) | `(🔴 NOT STARTED)` |
+| **004** | [Markdown Doc Link Auto-Remediation & Circular Cycle Detector](./markdown-doc-link-auto-remediation-roadmap-004.md) | `@feature-engineer.md`, `@security-auditor.md` | Milestone 4 (V1.4.0) | `(🟢 COMPLETED V1.4.0)` |
 
 ---
 
@@ -58,6 +58,10 @@ flowchart LR
 ### Item 003: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool
 - **Specification Document**: [`docs/roadmap/streaming-ast-ipc-bridge-roadmap-003.md`](./streaming-ast-ipc-bridge-roadmap-003.md)
 - **Primary Goal**: Replace ephemeral, one-shot Python subprocess execution with a high-throughput, persistent subprocess worker daemon pool (`internal/auditor/ipc_bridge.go` and `python/ast_daemon.py`). Communicate over bidirectional non-blocking Newline-Delimited JSON (NDJSON) pipes with heartbeat monitoring, crash auto-recovery, concurrency scaling, and zero orphaned zombie processes.
+
+### Item 004: Markdown Doc Link Auto-Remediation & Circular Cycle Detector
+- **Specification Document**: [`docs/roadmap/markdown-doc-link-auto-remediation-roadmap-004.md`](./markdown-doc-link-auto-remediation-roadmap-004.md)
+- **Primary Goal**: Transform documentation auditing from passive reporting into an active remediation engine (`internal/auditor/doc_remediator.go` & `cmd/graphify-doc-audit --fix`). Automatically calculate canonical relative paths (`filepath.Rel`), fuzzy-resolve moved or renamed markdown files, verify heading fragment anchors (`#anchor-slug`), detect circular document loops (Tarjan's SCC algorithm), and perform atomic in-place file updates with zero-trust path boundary containment.
 
 ---
 

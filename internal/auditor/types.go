@@ -232,3 +232,91 @@ type GraphStore interface {
 type ASTGraphAuditorService interface {
 	AuditGraphFile(ctx context.Context, graphPath string, verbose bool) (*ASTAuditReport, error)
 }
+
+// RemediationRule defines the specific heuristic applied to correct a markdown link.
+type RemediationRule string
+
+const (
+	// RuleFixRelativePath corrects inaccurate relative directory stepping (e.g. ../../docs -> ../docs).
+	RuleFixRelativePath RemediationRule = "FIX_RELATIVE_PATH"
+	// RuleResolveFuzzyBasename resolves a moved or renamed target file based on unique basename match.
+	RuleResolveFuzzyBasename RemediationRule = "RESOLVE_FUZZY_BASENAME"
+	// RuleStripInvalidScheme removes unsupported URI schemes (e.g. file:/// -> relative path).
+	RuleStripInvalidScheme RemediationRule = "STRIP_INVALID_SCHEME"
+	// RuleFixHeadingAnchor corrects or normalizes heading fragment anchors.
+	RuleFixHeadingAnchor RemediationRule = "FIX_HEADING_ANCHOR"
+)
+
+// RemediationAction captures an individual link rewrite within a markdown document.
+type RemediationAction struct {
+	SourceFile       string          `json:"source_file"`
+	LineNumber       int             `json:"line_number"`
+	OriginalLinkText string          `json:"original_link_text"`
+	OriginalTarget   string          `json:"original_target"`
+	ResolvedTarget   string          `json:"resolved_target"`
+	CanonicalRelPath string          `json:"canonical_rel_path"`
+	Rule             RemediationRule `json:"rule"`
+	Applied          bool            `json:"applied"`
+}
+
+// DocRemediationPlan aggregates all planned link rewrites across the workspace.
+type DocRemediationPlan struct {
+	WorkspaceRoot   string              `json:"workspace_root"`
+	Timestamp       time.Time           `json:"timestamp"`
+	TotalDocuments  int                 `json:"total_documents"`
+	ModifiedDocs    int                 `json:"modified_docs"`
+	TotalActions    int                 `json:"total_actions"`
+	Actions         []RemediationAction `json:"actions"`
+	DryRun          bool                `json:"dry_run"`
+	ExecutionTimeMs float64             `json:"execution_time_ms"`
+}
+
+// HeadingAnchorTable maps GitHub-Flavored Markdown (GFM) heading anchor slugs to source headings.
+type HeadingAnchorTable struct {
+	FilePath string            `json:"file_path"`
+	Anchors  map[string]string `json:"anchors"` // anchor_slug -> heading_text
+}
+
+// DocNode represents a document node in the topology.
+type DocNode struct {
+	ID       string `json:"id"`
+	FilePath string `json:"file_path"`
+}
+
+// DocEdge represents a directed link between documents.
+type DocEdge struct {
+	SourceID string `json:"source_id"`
+	TargetID string `json:"target_id"`
+}
+
+// DocGraph encapsulates the directed graph of markdown documents and outbound links.
+type DocGraph struct {
+	Nodes map[string]DocNode `json:"nodes"`
+	Edges []DocEdge          `json:"edges"`
+}
+
+// CircularCycle represents a closed directed reference loop in the documentation graph.
+type CircularCycle struct {
+	CycleID  string   `json:"cycle_id"`
+	Length   int      `json:"length"`
+	DocChain []string `json:"doc_chain"` // e.g. ["docA.md", "docB.md", "docA.md"]
+}
+
+// CycleReport aggregates all circular reference cycles detected in the documentation topology.
+type CycleReport struct {
+	TotalCycles int             `json:"total_cycles"`
+	Cycles      []CircularCycle `json:"cycles"`
+}
+
+// DocRemediatorService provides automated link calculation, fuzzy resolution, and atomic in-place rewriting.
+type DocRemediatorService interface {
+	PlanRemediation(ctx context.Context, workspaceRoot string, dryRun bool) (*DocRemediationPlan, error)
+	ApplyRemediation(ctx context.Context, plan *DocRemediationPlan) error
+	DetectCycles(ctx context.Context, workspaceRoot string) (*CycleReport, error)
+	IndexHeadingAnchors(ctx context.Context, workspaceRoot string) (map[string]*HeadingAnchorTable, error)
+}
+
+// CycleDetector computes strongly connected components and closed cycles on the doc link graph.
+type CycleDetector interface {
+	FindCycles(graph *DocGraph) *CycleReport
+}

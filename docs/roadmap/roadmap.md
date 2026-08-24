@@ -39,7 +39,7 @@ flowchart LR
 | Seq | Feature Title | Lead Personas | Target Milestone | Status |
 | :---: | :--- | :--- | :---: | :---: |
 | **001** | [Encapsulated Graphify Binary Manager & Single-Entrypoint Orchestrator](./encapsulated-graphify-binary-runner-roadmap-001.md) | `@feature-engineer.md`, `@security-auditor.md`, `@nexus.md` | Milestone 1 (V1.1.0) | `(🟢 COMPLETED V1.1.0)` |
-| **002** | [Deep AST Multi-Package Import & Interface Implementation Resolution](./deep-ast-multi-package-import-roadmap-002.md) | `@feature-engineer.md`, `@regression-tester.md` | Milestone 2 (V1.2.0) | `(🔴 NOT STARTED)` |
+| **002** | [Deep AST Multi-Package Import & Interface Implementation Resolution](./deep-ast-multi-package-import-roadmap-002.md) | `@feature-engineer.md`, `@regression-tester.md` | Milestone 2 (V1.2.0) | `(🟢 COMPLETED V1.2.0)` |
 | **003** | Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool | `@feature-engineer.md`, `@debugger-remediation.md` | Milestone 3 (V1.3.0) | `(🔴 NOT STARTED)` |
 | **004** | Markdown Doc Link Auto-Remediation & Circular Cycle Detector | `@feature-engineer.md`, `@security-auditor.md` | Milestone 4 (V1.4.0) | `(🔴 NOT STARTED)` |
 

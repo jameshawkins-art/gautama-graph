@@ -12,11 +12,14 @@ import (
 
 // Engine orchestrates AST parsing, selector evaluation, and graph edge metadata updates.
 type Engine struct {
-	parser    ASTParser
-	evaluator SelectorEvaluator
-	pyBridge  PythonASTBridge
-	store     GraphStore
-	cfg       Config
+	parser         ASTParser
+	evaluator      SelectorEvaluator
+	indexer        PackageSymbolIndexer
+	crossEvaluator CrossPackageEvaluator
+	ifaceResolver  InterfaceResolver
+	pyBridge       PythonASTBridge
+	store          GraphStore
+	cfg            Config
 }
 
 // NewEngine initializes a new Engine instance.
@@ -27,12 +30,16 @@ func NewEngine(p ASTParser, e SelectorEvaluator, s GraphStore, cfg Config) *Engi
 	if cfg.MaxASTDepth <= 0 {
 		cfg.MaxASTDepth = 50
 	}
+	idx := NewDefaultPackageSymbolIndexer()
 	return &Engine{
-		parser:    p,
-		evaluator: e,
-		pyBridge:  NewDefaultPythonASTBridge(cfg.WorkspaceRootPath),
-		store:     s,
-		cfg:       cfg,
+		parser:         p,
+		evaluator:      e,
+		indexer:        idx,
+		crossEvaluator: NewDefaultCrossPackageEvaluator(idx),
+		ifaceResolver:  NewDefaultInterfaceResolver(idx),
+		pyBridge:       NewDefaultPythonASTBridge(cfg.WorkspaceRootPath),
+		store:          s,
+		cfg:            cfg,
 	}
 }
 
@@ -47,18 +54,39 @@ func NewDefaultEngine(cfg Config) *Engine {
 	if cfg.MinConfidence <= 0 {
 		cfg.MinConfidence = 0.8
 	}
+	idx := NewDefaultPackageSymbolIndexer()
 	return &Engine{
-		parser:    NewDefaultASTParser(cfg.WorkspaceRootPath),
-		evaluator: NewDefaultSelectorEvaluator(cfg.MaxASTDepth),
-		pyBridge:  NewDefaultPythonASTBridge(cfg.WorkspaceRootPath),
-		store:     NewJSONGraphStore(),
-		cfg:       cfg,
+		parser:         NewDefaultASTParser(cfg.WorkspaceRootPath),
+		evaluator:      NewDefaultSelectorEvaluator(cfg.MaxASTDepth),
+		indexer:        idx,
+		crossEvaluator: NewDefaultCrossPackageEvaluator(idx),
+		ifaceResolver:  NewDefaultInterfaceResolver(idx),
+		pyBridge:       NewDefaultPythonASTBridge(cfg.WorkspaceRootPath),
+		store:          NewJSONGraphStore(),
+		cfg:            cfg,
 	}
 }
 
 // SetPythonBridge allows overriding the PythonASTBridge adapter (e.g. for testing).
 func (e *Engine) SetPythonBridge(b PythonASTBridge) {
 	e.pyBridge = b
+}
+
+// SetIndexer allows overriding the PackageSymbolIndexer adapter.
+func (e *Engine) SetIndexer(idx PackageSymbolIndexer) {
+	e.indexer = idx
+	e.crossEvaluator = NewDefaultCrossPackageEvaluator(idx)
+	e.ifaceResolver = NewDefaultInterfaceResolver(idx)
+}
+
+// SetCrossEvaluator allows overriding the CrossPackageEvaluator adapter.
+func (e *Engine) SetCrossEvaluator(ce CrossPackageEvaluator) {
+	e.crossEvaluator = ce
+}
+
+// SetInterfaceResolver allows overriding the InterfaceResolver adapter.
+func (e *Engine) SetInterfaceResolver(ir InterfaceResolver) {
+	e.ifaceResolver = ir
 }
 
 // AuditCandidates audits a list of CandidateEdge candidates against Go and Python AST specifications.
@@ -84,38 +112,86 @@ func (e *Engine) AuditCandidates(ctx context.Context, candidates []CandidateEdge
 			}
 			results = append(results, AuditedEdge{
 				CandidateEdge:    cand,
-				ProvenanceStatus: "INFERRED_HEURISTIC",
+				ProvenanceStatus: string(ProvenanceInferredHeuristic),
 				Confidence:       0.5,
 			})
 			continue
 		}
 
-		fileAST, _, err := e.parser.ParseFile(ctx, cand.SourceFile)
+		absSource := cand.SourceFile
+		if !filepath.IsAbs(absSource) && e.cfg.WorkspaceRootPath != "" {
+			absSource = filepath.Join(e.cfg.WorkspaceRootPath, cand.SourceFile)
+		}
+
+		fileAST, _, err := e.parser.ParseFile(ctx, absSource)
 		if err != nil {
 			// Fail-safe: mark unparseable files with zero confidence without breaking pipeline
 			results = append(results, AuditedEdge{
 				CandidateEdge:    cand,
-				ProvenanceStatus: "PRUNED_PHANTOM",
+				ProvenanceStatus: string(ProvenancePrunedPhantom),
 				Confidence:       0.0,
 			})
 			continue
 		}
 
+		// 1. Interface Implementation Evaluation
+		if e.ifaceResolver != nil {
+			ifacePkg := filepath.Dir(cand.TargetSymbol)
+			ifaceName := filepath.Base(cand.TargetSymbol)
+			concretePkg := filepath.Dir(cand.SourceFile)
+			concreteType := cand.SourceSymbol
+
+			ifImpl, _, ifErr := e.ifaceResolver.CheckImplementation(ctx, concretePkg, concreteType, ifacePkg, ifaceName)
+			if ifErr == nil && ifImpl {
+				results = append(results, AuditedEdge{
+					CandidateEdge:    cand,
+					ProvenanceStatus: string(ProvenanceResolvedInterfaceImpl),
+					Confidence:       1.0,
+					ASTNodePattern:   fmt.Sprintf("interface_impl: %s satisfies %s", concreteType, ifaceName),
+				})
+				continue
+			}
+		}
+
+		// 2. Multi-Package Cross-Call Evaluation
+		if e.crossEvaluator != nil {
+			targetPkg := filepath.Dir(cand.TargetSymbol)
+			targetSym := filepath.Base(cand.TargetSymbol)
+			if targetPkg == "." || targetPkg == "" {
+				targetPkg = ""
+				targetSym = cand.TargetSymbol
+			}
+
+			crossMatched, provStatus, crossPattern, crossErr := e.crossEvaluator.EvaluateCrossPackageCall(ctx, absSource, cand.SourceSymbol, targetPkg, targetSym)
+			if crossErr == nil && crossMatched {
+				results = append(results, AuditedEdge{
+					CandidateEdge:    cand,
+					ProvenanceStatus: string(provStatus),
+					Confidence:       1.0,
+					ASTNodePattern:   crossPattern,
+				})
+				continue
+			}
+		}
+
+		// 3. Local Single-File AST Evaluation
 		matched, pattern, err := e.evaluator.EvaluateSelector(fileAST, cand.SourceSymbol, cand.TargetSymbol)
-		if err != nil || !matched {
+		if err == nil && matched {
 			results = append(results, AuditedEdge{
 				CandidateEdge:    cand,
-				ProvenanceStatus: "PRUNED_PHANTOM",
-				Confidence:       0.0,
-			})
-		} else {
-			results = append(results, AuditedEdge{
-				CandidateEdge:    cand,
-				ProvenanceStatus: "EXTRACTED_AST",
+				ProvenanceStatus: string(ProvenanceExtractedAST),
 				Confidence:       1.0,
 				ASTNodePattern:   pattern,
 			})
+			continue
 		}
+
+		// 4. Default: Pruned Phantom
+		results = append(results, AuditedEdge{
+			CandidateEdge:    cand,
+			ProvenanceStatus: string(ProvenancePrunedPhantom),
+			Confidence:       0.0,
+		})
 	}
 
 	return results, nil
@@ -158,6 +234,11 @@ func (e *Engine) AuditGraphFile(ctx context.Context, graphPath string, verbose b
 		Timestamp:    time.Now(),
 		TotalEdges:   len(graph.Links),
 		AuditedEdges: make([]AuditedEdge, 0),
+	}
+
+	// Step 1: Pre-index workspace packages for deep cross-package AST analysis
+	if e.indexer != nil && e.cfg.WorkspaceRootPath != "" {
+		_, _ = e.indexer.IndexWorkspace(ctx, e.cfg.WorkspaceRootPath)
 	}
 
 	// Build node lookup map for symbol labels and file paths
@@ -221,7 +302,7 @@ func (e *Engine) AuditGraphFile(ctx context.Context, graphPath string, verbose b
 
 	auditedMap := make(map[string]AuditedEdge)
 
-	// Audit Go Candidates
+	// Audit Go Candidates with tiered evaluation (interface -> cross-package -> single-file)
 	for srcFile, cands := range goCandidates {
 		absPath := srcFile
 		if !filepath.IsAbs(absPath) && e.cfg.WorkspaceRootPath != "" {
@@ -233,7 +314,7 @@ func (e *Engine) AuditGraphFile(ctx context.Context, graphPath string, verbose b
 			if parseErr != nil {
 				audited := AuditedEdge{
 					CandidateEdge:    c,
-					ProvenanceStatus: "PRUNED_PHANTOM",
+					ProvenanceStatus: string(ProvenancePrunedPhantom),
 					Confidence:       0.0,
 				}
 				auditedMap[c.ID] = audited
@@ -242,27 +323,76 @@ func (e *Engine) AuditGraphFile(ctx context.Context, graphPath string, verbose b
 				continue
 			}
 
+			// 1. Interface Implementation Evaluation
+			if e.ifaceResolver != nil {
+				ifacePkg := filepath.Dir(c.TargetSymbol)
+				ifaceName := filepath.Base(c.TargetSymbol)
+				concretePkg := filepath.Dir(c.SourceFile)
+				concreteType := c.SourceSymbol
+
+				ifImpl, _, ifErr := e.ifaceResolver.CheckImplementation(ctx, concretePkg, concreteType, ifacePkg, ifaceName)
+				if ifErr == nil && ifImpl {
+					audited := AuditedEdge{
+						CandidateEdge:    c,
+						ProvenanceStatus: string(ProvenanceResolvedInterfaceImpl),
+						Confidence:       1.0,
+						ASTNodePattern:   fmt.Sprintf("interface_impl: %s satisfies %s", concreteType, ifaceName),
+					}
+					auditedMap[c.ID] = audited
+					report.VerifiedASTCount++
+					report.AuditedEdges = append(report.AuditedEdges, audited)
+					continue
+				}
+			}
+
+			// 2. Multi-Package Cross-Call Evaluation
+			if e.crossEvaluator != nil {
+				targetPkg := filepath.Dir(c.TargetSymbol)
+				targetSym := filepath.Base(c.TargetSymbol)
+				if targetPkg == "." || targetPkg == "" {
+					targetPkg = ""
+					targetSym = c.TargetSymbol
+				}
+
+				crossMatched, provStatus, crossPattern, crossErr := e.crossEvaluator.EvaluateCrossPackageCall(ctx, absPath, c.SourceSymbol, targetPkg, targetSym)
+				if crossErr == nil && crossMatched {
+					audited := AuditedEdge{
+						CandidateEdge:    c,
+						ProvenanceStatus: string(provStatus),
+						Confidence:       1.0,
+						ASTNodePattern:   crossPattern,
+					}
+					auditedMap[c.ID] = audited
+					report.VerifiedASTCount++
+					report.AuditedEdges = append(report.AuditedEdges, audited)
+					continue
+				}
+			}
+
+			// 3. Local Single-File Selector Check
 			matched, pattern, evalErr := e.evaluator.EvaluateSelector(fileAST, c.SourceSymbol, c.TargetSymbol)
 			if evalErr == nil && matched {
 				audited := AuditedEdge{
 					CandidateEdge:    c,
-					ProvenanceStatus: "EXTRACTED_AST",
+					ProvenanceStatus: string(ProvenanceExtractedAST),
 					Confidence:       1.0,
 					ASTNodePattern:   pattern,
 				}
 				auditedMap[c.ID] = audited
 				report.VerifiedASTCount++
 				report.AuditedEdges = append(report.AuditedEdges, audited)
-			} else {
-				audited := AuditedEdge{
-					CandidateEdge:    c,
-					ProvenanceStatus: "PRUNED_PHANTOM",
-					Confidence:       0.0,
-				}
-				auditedMap[c.ID] = audited
-				report.PrunedPhantomCount++
-				report.AuditedEdges = append(report.AuditedEdges, audited)
+				continue
 			}
+
+			// 4. Default: Pruned Phantom
+			audited := AuditedEdge{
+				CandidateEdge:    c,
+				ProvenanceStatus: string(ProvenancePrunedPhantom),
+				Confidence:       0.0,
+			}
+			auditedMap[c.ID] = audited
+			report.PrunedPhantomCount++
+			report.AuditedEdges = append(report.AuditedEdges, audited)
 		}
 	}
 
@@ -285,7 +415,7 @@ func (e *Engine) AuditGraphFile(ctx context.Context, graphPath string, verbose b
 			for _, c := range cands {
 				audited := AuditedEdge{
 					CandidateEdge:    c,
-					ProvenanceStatus: "INFERRED_HEURISTIC",
+					ProvenanceStatus: string(ProvenanceInferredHeuristic),
 					Confidence:       0.5,
 				}
 				auditedMap[c.ID] = audited
@@ -299,9 +429,9 @@ func (e *Engine) AuditGraphFile(ctx context.Context, graphPath string, verbose b
 			auditedMap[a.ID] = a
 			report.AuditedEdges = append(report.AuditedEdges, a)
 			switch a.ProvenanceStatus {
-			case "EXTRACTED_AST":
+			case string(ProvenanceExtractedAST):
 				report.VerifiedASTCount++
-			case "PRUNED_PHANTOM":
+			case string(ProvenancePrunedPhantom):
 				report.PrunedPhantomCount++
 			default:
 				report.HeuristicCount++

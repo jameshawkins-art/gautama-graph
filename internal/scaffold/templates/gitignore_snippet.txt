@@ -1,0 +1,3 @@
+# Graphify Knowledge Graph & Topology
+graphify-out/
+.gautama-graph/

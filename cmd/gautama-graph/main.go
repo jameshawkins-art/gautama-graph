@@ -13,6 +13,21 @@ import (
 )
 
 func main() {
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "antigravity":
+			if err := handleAntigravityCommand(os.Args[2:]); err != nil {
+				log.Fatalf("❌ Antigravity setup failed: %v", err)
+			}
+			return
+		case "init":
+			if err := handleAntigravityCommand(os.Args[2:]); err != nil {
+				log.Fatalf("❌ Init setup failed: %v", err)
+			}
+			return
+		}
+	}
+
 	strictFlag := flag.Bool("strict", false, "Fail with non-zero exit code if phantom edges or doc issues exist")
 	workspaceFlag := flag.String("workspace", "", "Path to workspace root (defaults to CWD)")
 	forceDownloadFlag := flag.Bool("force-download", false, "Force download of latest release binary from GitHub")

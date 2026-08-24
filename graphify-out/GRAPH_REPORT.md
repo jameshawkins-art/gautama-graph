@@ -1,16 +1,16 @@
 # Graph Report - gautama-graph  (2026-08-24)
 
 ## Corpus Check
-- 86 files · ~65,704 words
+- 97 files · ~72,496 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 752 nodes · 1118 edges · 66 communities (58 shown, 8 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 66 edges (avg confidence: 0.8)
+- 845 nodes · 1248 edges · 67 communities (57 shown, 10 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 67 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `40e43f21`
+- Built from commit: `87c25f25`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,7 @@
 - What You Must Do When Invoked
 - Section 1: Core Behavioral Rules & Guardrails
 - Graphify Knowledge Graph Auditing Subsystem
-- sdlc-step1.md
+- DefaultDocRemediatorService
 - Global Workspace Execution & Gatekeeping Rules (rules.md)
 - Section 1: Core Behavioral Rules & Guardrails
 - Pre-SDLC Roadmap Item Formulation Directive
@@ -50,7 +50,7 @@
 - graphify reference: transcribe video and audio
 - extraction-spec.md
 - workflows/graphify.md
-- Gautama Graph Master Product & Architecture Roadmap
+- Detailed Item Specifications
 - graphify_sync.sh
 - github.com/jameshawkins-art/gautama-graph
 - context.Context
@@ -58,40 +58,42 @@
 - Core Directives & Rules
 - runner_test.go
 - 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
-- sdlc-step2.md
 - agent-execute.sh
 - gautama-studio-execute.sh
 - Requirements Specification: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool
-- sdlc-step3.md
+- 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 - auditor/types.go
 - Technical Architecture Blueprint: Deep AST Multi-Package Import & Interface Implementation Resolution
-- bug-step2.md
-- sdlc-step4.md
+- 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
+- nexus.md
 - Feature Roadmap Item 003: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool (🟢 COMPLETED V1.3.0)
 - audit_python_file
 - Requirements Specification: Markdown Doc Link Auto-Remediation & Circular Cycle Detector
 - Architecture Blueprint: Markdown Doc Link Auto-Remediation & Circular Cycle Detector
 - PackageSymbolTable
 - Audit Findings Across the 5 Technical Pillars
-- bug-step3.md
+- 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 - Feature Roadmap Item 004: Markdown Doc Link Auto-Remediation & Circular Cycle Detector (🟢 COMPLETED V1.4.0)
 - Core Directives & Rules
-- Section 1: Core Behavioral Rules & Guardrails
-- 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
-- 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
-- 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
+- Requirements Specification: Antigravity Environment Scaffolder & Knowledge Setup CLI
+- Architecture Blueprint: Antigravity Environment Scaffolder & Knowledge Setup CLI
+- Feature Roadmap Item 005: Antigravity Environment Scaffolder & Knowledge Setup CLI
+- Graphify Knowledge Graph & Topology Rules
+- Graphify Workflow Playbook
+- templates/scripts/graphify_sync.sh
+- agents_snippet.md
 
 ## God Nodes (most connected - your core abstractions)
 1. `Engine` - 21 edges
 2. `NewDefaultEngine()` - 17 edges
 3. `workerSession` - 17 edges
 4. `NewEngine()` - 12 edges
-5. `What You Must Do When Invoked` - 12 edges
-6. `NewDefaultIPCWorkerPool()` - 10 edges
-7. `PackageSymbolTable` - 10 edges
-8. `AuditedEdge` - 10 edges
-9. `/graphify` - 10 edges
-10. `Graphify Knowledge Graph Auditing Subsystem` - 10 edges
+5. `NewDefaultScaffolderService()` - 12 edges
+6. `What You Must Do When Invoked` - 12 edges
+7. `NewDefaultIPCWorkerPool()` - 10 edges
+8. `PackageSymbolTable` - 10 edges
+9. `AuditedEdge` - 10 edges
+10. `/graphify` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `main()` --calls--> `NewStandardOrchestrator()`  [EXTRACTED]
@@ -100,27 +102,27 @@
   cmd/graphify-ast-audit/main.go → internal/auditor/engine.go
 - `main()` --calls--> `NewDocGraphAuditor()`  [EXTRACTED]
   cmd/graphify-doc-audit/main.go → internal/auditor/doc_auditor.go
+- `handleAntigravityCommand()` --calls--> `NewDefaultScaffolderService()`  [EXTRACTED]
+  cmd/gautama-graph/antigravity.go → internal/scaffold/scaffolder.go
 - `main()` --calls--> `NewDefaultDocRemediatorService()`  [EXTRACTED]
   cmd/graphify-doc-audit/main.go → internal/auditor/doc_remediator.go
-- `NewEngine()` --calls--> `NewDefaultCrossPackageEvaluator()`  [INFERRED]
-  internal/auditor/engine.go → internal/auditor/cross_package.go
 
 ## Import Cycles
 - None detected.
 
-## Communities (66 total, 8 thin omitted)
+## Communities (67 total, 10 thin omitted)
 
 ### Community 0 - "bug-step1.md"
-Cohesion: 0.20
-Nodes (9): 1. Defect Classification & Impact Analysis (`@debugger-remediation.md`, `@nexus.md`), 2. Deterministic Minimal Reproduction Case (`@debugger-remediation.md`), 3. Bug Specification Document (`docs/bugs/bug-<description>-<id>.md`), CONTEXT & OBJECTIVE, 🕸️ MANDATORY GRAPHIFY KNOWLEDGE GRAPH DISCOVERY (TOKEN OPTIMIZATION), 📄 OUTPUT FILE REQUIREMENT, 🛑 PHASE B1 EXECUTION CONSTRAINTS, 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES (+1 more)
+Cohesion: 0.10
+Nodes (19): 1.1 Root-Cause Isolation & Minimal Surgical Patches, 1.2 IPC Bridge & Subprocess Crash Defense (`python/ast_auditor_bridge.py`), 1.3 Concurrency & Mutex Safety, 1.4 AST Walkers & Link Graph Recursion Guardrails, 2.1 Root Cause Analysis & Remediation Proposal (`remediation_proposal.md`), 2.2 Patch Feasibility Proposal (`patch_feasibility_proposal.md`), 2.3 JSON Remediation Meta-Artifact (`remediation_meta.json`), Debugger & Remediation Skill (`gautama-mechanic`) (+11 more)
 
 ### Community 1 - "testing.T"
-Cohesion: 0.08
-Nodes (37): DefaultASTParser, DefaultCrossPackageEvaluator, DefaultInterfaceResolver, DefaultSelectorEvaluator, InterfaceBinding, PackageSymbolIndexer, ProvenanceStatus, TestGautamaGraphCLI_Help() (+29 more)
+Cohesion: 0.09
+Nodes (34): DefaultASTParser, DefaultSelectorEvaluator, handleAntigravityCommand(), main(), TestGautamaGraphCLI_AntigravityInstall_DryRun(), TestGautamaGraphCLI_AntigravityInstall_Execution(), TestGautamaGraphCLI_Help(), go/ast.File (+26 more)
 
 ### Community 2 - "doc_auditor.go"
-Cohesion: 0.16
-Nodes (17): BrokenLinkResult, DefaultDocGraphParser, DefaultDocGraphStore, DocGraphAuditor, DocGraphParser, DocGraphStore, DocNodeResult, regexp.Regexp (+9 more)
+Cohesion: 0.17
+Nodes (16): BrokenLinkResult, DefaultDocGraphParser, DefaultDocGraphStore, DocGraphAuditor, DocGraphParser, DocGraphStore, DocNodeResult, regexp.Regexp (+8 more)
 
 ### Community 3 - "What You Must Do When Invoked"
 Cohesion: 0.08
@@ -134,9 +136,9 @@ Nodes (10): 1.1 Test Isolation & Hermetic Filesystem Usage, 1.2 Table-Driven Tes
 Cohesion: 0.11
 Nodes (18): 1. AST Code Relationship Auditor (`cmd/graphify-ast-audit`), 2. Markdown Documentation Graph Auditor (`cmd/graphify-doc-audit`), 🏛️ Architecture & Components, CLI Flags, CLI Flags, 🛠️ CLI Utilities & Usage, Example 1: Auditing Code Relationships in Go, Example 2: Auditing Documentation Graph Integrity (+10 more)
 
-### Community 6 - "sdlc-step1.md"
-Cohesion: 0.17
-Nodes (10): 2.1 Security Audit Report (`security_audit_report.md`), 2.2 Security Compliance Checklist (`compliance_checklist.md`), 2.3 JSON Security Verification Meta-Artifact (`security_verification_meta.json`), Section 2: Expected Antigravity Artifact Deliverables, Security & Compliance Auditor Skill (`gautama-gatekeeper`), CONTEXT & OBJECTIVE, 🕸️ MANDATORY GRAPHIFY KNOWLEDGE GRAPH DISCOVERY (TOKEN OPTIMIZATION), 📄 OUTPUT FILE REQUIREMENT (+2 more)
+### Community 6 - "DefaultDocRemediatorService"
+Cohesion: 0.13
+Nodes (17): CycleDetector, DefaultDocRemediatorService, DocRemediationPlan, HeadingAnchorTable, TarjanSCCDetector, main(), NewTarjanSCCDetector(), CalculateCanonicalRelPath() (+9 more)
 
 ### Community 7 - "Global Workspace Execution & Gatekeeping Rules (rules.md)"
 Cohesion: 0.15
@@ -234,13 +236,13 @@ Nodes (3): audit_python_file(), main(), Any
 Cohesion: 0.40
 Nodes (5): 1.1 Path Traversal Defense & Zero-Trust Filesystem Confinement, 1.2 Unsafe Memory & CGo Ban, 1.3 Subprocess Isolation & Command Injection Defense, 1.4 Dependency Vulnerability Auditing & Public API Tracking, Section 1: Core Behavioral Rules & Guardrails
 
-### Community 35 - "Gautama Graph Master Product & Architecture Roadmap"
-Cohesion: 0.20
-Nodes (10): Architectural Subsystems Overview, Detailed Item Specifications, Executive Summary & Strategic Mission, Gautama Graph Master Product & Architecture Roadmap, Item 001: Encapsulated Graphify Binary Manager & Single-Entrypoint Orchestrator, Item 002: Deep AST Multi-Package Import & Interface Implementation Resolution, Item 003: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool, Item 004: Markdown Doc Link Auto-Remediation & Circular Cycle Detector (+2 more)
+### Community 35 - "Detailed Item Specifications"
+Cohesion: 0.18
+Nodes (11): Architectural Subsystems Overview, Detailed Item Specifications, Executive Summary & Strategic Mission, Gautama Graph Master Product & Architecture Roadmap, Item 001: Encapsulated Graphify Binary Manager & Single-Entrypoint Orchestrator, Item 002: Deep AST Multi-Package Import & Interface Implementation Resolution, Item 003: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool, Item 004: Markdown Doc Link Auto-Remediation & Circular Cycle Detector (+3 more)
 
 ### Community 38 - "context.Context"
-Cohesion: 0.10
-Nodes (20): AuditedEdge, CandidateEdge, DefaultIPCWorkerPool, DefaultPythonASTBridge, GraphData, IPCResponse, JSONGraphStore, PoolStats (+12 more)
+Cohesion: 0.06
+Nodes (35): AuditedEdge, CandidateEdge, DefaultIPCWorkerPool, DefaultPythonASTBridge, GraphData, IPCCommand, IPCRequest, IPCResponse (+27 more)
 
 ### Community 39 - "Core Directives & Rules"
 Cohesion: 0.33
@@ -251,40 +253,36 @@ Cohesion: 0.33
 Nodes (6): 1. Test Isolation & Hermetic Environments, 2. Table-Driven Tests & Edge Cases, 3. Concurrency, Race Detection & Coverage Gates, Core Directives & Rules, Deliverables & Meta-Artifacts, Regression & Test Automation Persona Specification (`gautama-guard`)
 
 ### Community 41 - "runner_test.go"
-Cohesion: 0.06
-Nodes (40): main(), net/http.Client, time.Duration, DocGraphAuditorService, ASTGraphAuditorService, NewDefaultReleaseDownloader(), NewDefaultBinaryManager(), ResolveDefaultCacheDir() (+32 more)
+Cohesion: 0.07
+Nodes (39): net/http.Client, sync.Mutex, time.Duration, DocGraphAuditorService, ASTGraphAuditorService, NewDefaultReleaseDownloader(), NewDefaultBinaryManager(), ResolveDefaultCacheDir() (+31 more)
 
 ### Community 42 - "📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES"
 Cohesion: 0.40
 Nodes (5): 1. Requirements Scope & Go Interface Specifications (`@nexus.md`, `@feature-engineer.md`), 2. Filesystem Confinement & Two-Phase Persistence Plan (`@feature-engineer.md`, `@security-auditor.md`), 3. Cyber Security Threat Modeling & Subprocess Safety (`@security-auditor.md`), 4. Definition of Done (DoD) & Acceptance Criteria (`@nexus.md`, `@feature-engineer.md`), 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 
-### Community 43 - "sdlc-step2.md"
-Cohesion: 0.20
-Nodes (9): 1. Go Engine & Interface Architecture Blueprint (`@feature-engineer.md`, `@nexus.md`), 2. Python IPC Bridge & Subprocess Contract (`@feature-engineer.md`, `@security-auditor.md`), 3. Cyber Security Architecture & Hardening Strategy (`@security-auditor.md`), CONTEXT & OBJECTIVE, 🕸️ MANDATORY GRAPHIFY KNOWLEDGE GRAPH MAPPING (TOKEN OPTIMIZATION), 📄 OUTPUT FILE REQUIREMENT, 🛑 PHASE 2 EXECUTION CONSTRAINTS, 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES (+1 more)
-
 ### Community 46 - "Requirements Specification: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool"
 Cohesion: 0.11
 Nodes (19): 1.1 Context & Problem Statement, 1.2 Target Vision, 1. Executive Summary & Problem Scope, 2.1 IPC Protocol & Data Contracts, 2.2 IPC Worker & Pool Interfaces, 2. Go Interface Contracts & Domain Models, 3.1 Framing Specification, 3.2 Python Daemon Specification (`python/ast_daemon.py`) (+11 more)
 
-### Community 47 - "sdlc-step3.md"
-Cohesion: 0.17
-Nodes (10): 2.1 Feature Implementation Plan (`feature_implementation_plan.md`), 2.2 Patch Feasibility Proposal (`patch_feasibility_proposal.md`), 2.3 Feature Delivery Meta-Artifact (`feature_delivery.json`), Feature Engineer Skill (`gautama-builder`), Section 2: Expected Antigravity Artifact Deliverables, CONTEXT & OBJECTIVE, 🕸️ MANDATORY GRAPHIFY DISCOVERY & POST-IMPLEMENTATION SYNC, 📄 OUTPUT FILE REQUIREMENT (+2 more)
+### Community 47 - "📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES"
+Cohesion: 0.50
+Nodes (4): 1. Hardened Go Engine Implementation (`@feature-engineer.md`, `@nexus.md`), 2. Table-Driven Test Suites & Regression Verification (`@regression-tester.md`), 3. SQA Certification & Deliverable Handoff (`@regression-tester.md`, `@security-auditor.md`, `@nexus.md`), 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 
 ### Community 48 - "auditor/types.go"
-Cohesion: 0.06
-Nodes (43): ASTParser, CircularCycle, Config, CrossPackageEvaluator, CycleDetector, CycleReport, DefaultDocRemediatorService, DocEdge (+35 more)
+Cohesion: 0.07
+Nodes (38): ASTParser, CircularCycle, Config, CrossPackageEvaluator, CycleReport, DefaultCrossPackageEvaluator, DefaultInterfaceResolver, DocEdge (+30 more)
 
 ### Community 49 - "Technical Architecture Blueprint: Deep AST Multi-Package Import & Interface Implementation Resolution"
 Cohesion: 0.12
 Nodes (17): 1. Executive Architecture Summary & System Topology, 2.1 Domain Data Structures & Contracts, 2.2 Concrete Subsystem Components, 2. Detailed Go Interface & Struct Architecture, 3.1 Workspace Package Discovery & Compilation (`indexer.go`), 3.2 Cross-Package Selector Call Evaluation (`cross_package.go`), 3.3 Implicit Interface Satisfaction Resolution (`resolver.go`), 3. Algorithmic Multi-Package Indexing & Type-Checking Engine (+9 more)
 
-### Community 50 - "bug-step2.md"
-Cohesion: 0.17
-Nodes (10): 2.1 Root Cause Analysis & Remediation Proposal (`remediation_proposal.md`), 2.2 Patch Feasibility Proposal (`patch_feasibility_proposal.md`), 2.3 JSON Remediation Meta-Artifact (`remediation_meta.json`), Debugger & Remediation Skill (`gautama-mechanic`), Section 2: Expected Antigravity Artifact Deliverables, CONTEXT & OBJECTIVE, 🕸️ MANDATORY GRAPHIFY KNOWLEDGE GRAPH MAPPING (TOKEN OPTIMIZATION), 📄 OUTPUT FILE REQUIREMENT (+2 more)
+### Community 51 - "📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES"
+Cohesion: 0.50
+Nodes (4): 1. Security Verification & Dependency Audit (`@security-auditor.md`, `@nexus.md`), 2. Compilation & Master Knowledge Graph Sync (`@nexus.md`, `@regression-tester.md`), 3. Release Matrix Update & Production Synchronization (`@nexus.md`), 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 
-### Community 51 - "sdlc-step4.md"
-Cohesion: 0.40
-Nodes (4): CONTEXT & OBJECTIVE, 📄 OUTPUT FILE REQUIREMENT, 🛑 PHASE 5 & 6 EXECUTION AUTHORITY, 🔒 STEP 4 CONTEXT ISOLATION & PROGRESSIVE DISCLOSURE
+### Community 52 - "nexus.md"
+Cohesion: 0.05
+Nodes (47): 2.1 Feature Implementation Plan (`feature_implementation_plan.md`), 2.2 Patch Feasibility Proposal (`patch_feasibility_proposal.md`), 2.3 Feature Delivery Meta-Artifact (`feature_delivery.json`), Feature Engineer Skill (`gautama-builder`), Section 2: Expected Antigravity Artifact Deliverables, 2.1 Security Audit Report (`security_audit_report.md`), 2.2 Security Compliance Checklist (`compliance_checklist.md`), 2.3 JSON Security Verification Meta-Artifact (`security_verification_meta.json`) (+39 more)
 
 ### Community 53 - "Feature Roadmap Item 003: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool (🟢 COMPLETED V1.3.0)"
 Cohesion: 0.29
@@ -310,9 +308,9 @@ Nodes (8): DefaultPackageSymbolIndexer, PackageSymbolTable, go/ast.FieldList, go
 Cohesion: 0.20
 Nodes (10): 1. Pillar 1: Go Interface Abstractions & Export Standards, 2. Pillar 2: Zero-Trust Path Confinement & Traversal Defense, 3. Pillar 3: Atomic Persistence & Concurrency Hygiene, 4. Pillar 4: Subprocess Lifecycle & Stream Safety, 5. Pillar 5: Test Suite Integrity & Vulnerability Assessment, Audit Findings Across the 5 Technical Pillars, Executive Summary, Lead Engine Architect & Security Code Audit Report (+2 more)
 
-### Community 59 - "bug-step3.md"
-Cohesion: 0.20
-Nodes (9): 1. Targeted Code Remediation (`@debugger-remediation.md`), 2. Regression & SQA Verification (`@regression-tester.md`), 3. Security Check & Defect Closure (`@security-auditor.md`, `@nexus.md`), CONTEXT & OBJECTIVE, 🕸️ MANDATORY GRAPHIFY DISCOVERY & POST-FIX GRAPH SYNC, 📄 OUTPUT FILE REQUIREMENT, 🛑 PHASE B3 & B4 EXECUTION CONSTRAINTS, 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES (+1 more)
+### Community 59 - "📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES"
+Cohesion: 0.50
+Nodes (4): 1. Targeted Code Remediation (`@debugger-remediation.md`), 2. Regression & SQA Verification (`@regression-tester.md`), 3. Security Check & Defect Closure (`@security-auditor.md`, `@nexus.md`), 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 
 ### Community 60 - "Feature Roadmap Item 004: Markdown Doc Link Auto-Remediation & Circular Cycle Detector (🟢 COMPLETED V1.4.0)"
 Cohesion: 0.29
@@ -322,41 +320,45 @@ Nodes (7): 1. Executive Summary & Strategic Objective, 2. Subsystem / Engine Com
 Cohesion: 0.33
 Nodes (6): 1. Minimal Surgical Patches & Repro-First, 2. IPC Bridge & Subprocess Resilience, 3. Concurrency & Mutex Discipline, Core Directives & Rules, Debugger & Remediation Persona Specification (`gautama-mechanic`), Deliverables & Meta-Artifacts
 
-### Community 62 - "Section 1: Core Behavioral Rules & Guardrails"
+### Community 62 - "Requirements Specification: Antigravity Environment Scaffolder & Knowledge Setup CLI"
+Cohesion: 0.10
+Nodes (20): 1.1 Context & Problem Statement, 1.2 Target Vision, 1. Executive Summary & Problem Scope, 2.1 Domain Models & Data Structures, 2.2 Subsystem Interfaces, 2. Go Interface Contracts & Domain Models, 3.1 Embedded Template Rendering, 3.2 Non-Destructive File Merging (+12 more)
+
+### Community 63 - "Architecture Blueprint: Antigravity Environment Scaffolder & Knowledge Setup CLI"
+Cohesion: 0.12
+Nodes (17): 1. System Architecture & High-Level Topology, 2.1 Domain Data Structures, 2.2 Subsystem Interfaces, 2. Go Interface Architecture & Domain Contracts, 3.1 Embedded Template Filesystem Layout, 3.2 Plan Formulation & Non-Destructive Scaffolding, 3.3 Atomic Two-Phase File Commit, 3. Core Algorithms & Implementation Details (+9 more)
+
+### Community 64 - "Feature Roadmap Item 005: Antigravity Environment Scaffolder & Knowledge Setup CLI"
+Cohesion: 0.29
+Nodes (7): 1. Executive Summary & Strategic Objective, 2. Subsystem / Engine Component Matrix, 3. Phased Master Task Matrix, 4. Definition of Done (DoD), Feature Roadmap Item 005: Antigravity Environment Scaffolder & Knowledge Setup CLI, Problem Statement, Strategic Solution & Target Architecture
+
+### Community 65 - "Graphify Knowledge Graph & Topology Rules"
+Cohesion: 0.33
+Nodes (5): 1. Graph Discovery First (Token Optimization), 2. Post-Modification Update & AST Pruning, 3. Documentation Link Standards, 4. Full Pipeline Synchronization, Graphify Knowledge Graph & Topology Rules
+
+### Community 66 - "Graphify Workflow Playbook"
 Cohesion: 0.40
-Nodes (5): 1.1 Root-Cause Isolation & Minimal Surgical Patches, 1.2 IPC Bridge & Subprocess Crash Defense (`python/ast_auditor_bridge.py`), 1.3 Concurrency & Mutex Safety, 1.4 AST Walkers & Link Graph Recursion Guardrails, Section 1: Core Behavioral Rules & Guardrails
-
-### Community 63 - "📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES"
-Cohesion: 0.50
-Nodes (4): 1. Root Cause Analysis (RCA) (`@debugger-remediation.md`, `@nexus.md`), 2. Technical Remediation Blueprint & Surgical Diff Preview (`@debugger-remediation.md`), 3. Security & Side-Effect Assessment (`@security-auditor.md`), 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
-
-### Community 64 - "📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES"
-Cohesion: 0.50
-Nodes (4): 1. Hardened Go Engine Implementation (`@feature-engineer.md`, `@nexus.md`), 2. Table-Driven Test Suites & Regression Verification (`@regression-tester.md`), 3. SQA Certification & Deliverable Handoff (`@regression-tester.md`, `@security-auditor.md`, `@nexus.md`), 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
-
-### Community 65 - "📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES"
-Cohesion: 0.50
-Nodes (4): 1. Security Verification & Dependency Audit (`@security-auditor.md`, `@nexus.md`), 2. Compilation & Master Knowledge Graph Sync (`@nexus.md`, `@regression-tester.md`), 3. Release Matrix Update & Production Synchronization (`@nexus.md`), 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
+Nodes (4): Graphify Workflow Playbook, Step 1: Run Gautama Graph Pipeline, Step 2: Query Knowledge Graph, Step 3: Run Deterministic Relationship & Doc Audits
 
 ## Knowledge Gaps
-- **337 isolated node(s):** `github.com/jameshawkins-art/gautama-graph`, `IPCSession`, `DocRemediatorService`, `OrchestratorService`, `agent-execute.sh script` (+332 more)
+- **380 isolated node(s):** `github.com/jameshawkins-art/gautama-graph`, `IPCSession`, `DocRemediatorService`, `OrchestratorService`, `graphify_sync.sh script` (+375 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Requirements Specification: Markdown Doc Link Auto-Remediation & Circular Cycle Detector` connect `Requirements Specification: Markdown Doc Link Auto-Remediation & Circular Cycle Detector` to `nexus.md`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
-- **Why does `Requirements Specification: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool` connect `Requirements Specification: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool` to `nexus.md`?**
   _High betweenness centrality (0.023) - this node is a cross-community bridge._
-- **Why does `Architecture Blueprint: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool` connect `Architecture Blueprint: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool` to `nexus.md`?**
+- **Why does `Requirements Specification: Antigravity Environment Scaffolder & Knowledge Setup CLI` connect `Requirements Specification: Antigravity Environment Scaffolder & Knowledge Setup CLI` to `nexus.md`?**
   _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `Requirements Specification: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool` connect `Requirements Specification: Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool` to `nexus.md`?**
+  _High betweenness centrality (0.021) - this node is a cross-community bridge._
 - **Are the 11 inferred relationships involving `NewDefaultEngine()` (e.g. with `NewDefaultCrossPackageEvaluator()` and `NewDefaultSelectorEvaluator()`) actually correct?**
   _`NewDefaultEngine()` has 11 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `github.com/jameshawkins-art/gautama-graph`, `IPCSession`, `DocRemediatorService` to the rest of the system?**
-  _337 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _380 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `bug-step1.md` be split into smaller, more focused modules?**
+  _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._
 - **Should `testing.T` be split into smaller, more focused modules?**
-  _Cohesion score 0.0803633822501747 - nodes in this community are weakly interconnected._
-- **Should `What You Must Do When Invoked` be split into smaller, more focused modules?**
-  _Cohesion score 0.08 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0919661733615222 - nodes in this community are weakly interconnected._

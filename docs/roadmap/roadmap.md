@@ -42,6 +42,7 @@ flowchart LR
 | **002** | [Deep AST Multi-Package Import & Interface Implementation Resolution](./deep-ast-multi-package-import-roadmap-002.md) | `@feature-engineer.md`, `@regression-tester.md` | Milestone 2 (V1.2.0) | `(🟢 COMPLETED V1.2.0)` |
 | **003** | [Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool](./streaming-ast-ipc-bridge-roadmap-003.md) | `@feature-engineer.md`, `@debugger-remediation.md` | Milestone 3 (V1.3.0) | `(🟢 COMPLETED V1.3.0)` |
 | **004** | [Markdown Doc Link Auto-Remediation & Circular Cycle Detector](./markdown-doc-link-auto-remediation-roadmap-004.md) | `@feature-engineer.md`, `@security-auditor.md` | Milestone 4 (V1.4.0) | `(🟢 COMPLETED V1.4.0)` |
+| **005** | [Antigravity Environment Scaffolder & Knowledge Setup CLI](./antigravity-environment-installer-roadmap-005.md) | `@feature-engineer.md`, `@security-auditor.md`, `@nexus.md` | Milestone 5 (V1.5.0) | `(🟢 COMPLETED V1.5.0)` |
 
 ---
 
@@ -62,6 +63,10 @@ flowchart LR
 ### Item 004: Markdown Doc Link Auto-Remediation & Circular Cycle Detector
 - **Specification Document**: [`docs/roadmap/markdown-doc-link-auto-remediation-roadmap-004.md`](./markdown-doc-link-auto-remediation-roadmap-004.md)
 - **Primary Goal**: Transform documentation auditing from passive reporting into an active remediation engine (`internal/auditor/doc_remediator.go` & `cmd/graphify-doc-audit --fix`). Automatically calculate canonical relative paths (`filepath.Rel`), fuzzy-resolve moved or renamed markdown files, verify heading fragment anchors (`#anchor-slug`), detect circular document loops (Tarjan's SCC algorithm), and perform atomic in-place file updates with zero-trust path boundary containment.
+
+### Item 005: Antigravity Environment Scaffolder & Knowledge Setup CLI
+- **Specification Document**: [`docs/roadmap/antigravity-environment-installer-roadmap-005.md`](./antigravity-environment-installer-roadmap-005.md)
+- **Primary Goal**: Provide a turnkey setup and environment initialization command (`graphify antigravity install --project` / `gautama-graph antigravity install --project`) that uses Go embedded templates (`//go:embed`) to scaffold `.agents/rules/graphify.md`, `.agents/workflows/graphify.md`, `.agents/AGENTS.md` snippets, `scripts/graphify_sync.sh`, and `.gitignore` entries into any consumer workspace cleanly, idempotently, and securely.
 
 ---
 

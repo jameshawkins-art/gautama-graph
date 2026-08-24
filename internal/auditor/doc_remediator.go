@@ -144,6 +144,10 @@ func parseFileHeadings(absPath, relPath string) (*HeadingAnchorTable, error) {
 		}
 	}
 
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("failed reading markdown headings in %s: %w", absPath, err)
+	}
+
 	return table, nil
 }
 

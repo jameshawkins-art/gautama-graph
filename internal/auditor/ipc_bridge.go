@@ -417,9 +417,10 @@ func (p *DefaultIPCWorkerPool) Stats() PoolStats {
 		s := w.stats
 		w.mu.Unlock()
 
-		if s.State == WorkerStateIdle {
+		switch s.State {
+		case WorkerStateIdle:
 			stats.IdleWorkers++
-		} else if s.State == WorkerStateBusy {
+		case WorkerStateBusy:
 			stats.BusyWorkers++
 		}
 		stats.Workers = append(stats.Workers, s)

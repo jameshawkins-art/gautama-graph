@@ -37,6 +37,7 @@ type ScaffoldOptions struct {
 	Minimal       bool   `json:"minimal"`
 	WithScripts   bool   `json:"with_scripts"`
 	WithGitIgnore bool   `json:"with_gitignore"`
+	WithMakefile  bool   `json:"with_makefile"`
 	Verbose       bool   `json:"verbose"`
 }
 
@@ -61,6 +62,7 @@ type ScaffoldVerificationReport struct {
 	RulesFound    bool      `json:"rules_found"`
 	WorkflowFound bool      `json:"workflow_found"`
 	ScriptFound   bool      `json:"script_found"`
+	MakefileFound bool      `json:"makefile_found"`
 	Errors        []string  `json:"errors,omitempty"`
 }
 

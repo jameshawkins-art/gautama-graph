@@ -47,6 +47,7 @@ func handleAntigravityCommand(args []string) error {
 		Minimal:       *minimalFlag,
 		WithScripts:   !*minimalFlag,
 		WithGitIgnore: !*minimalFlag,
+		WithMakefile:  !*minimalFlag,
 		Verbose:       *verboseFlag,
 	}
 

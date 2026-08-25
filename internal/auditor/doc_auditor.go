@@ -96,10 +96,10 @@ func (p *DefaultDocGraphParser) ParseWorkspaceDocs(ctx context.Context, workspac
 			return err
 		}
 
-		// Skip hidden dirs, node_modules, vendor, .git, graphify-out, node- binaries
+		// Skip hidden dirs, node_modules, vendor, .git, graphify-out, templates, node- binaries
 		if info.IsDir() {
 			base := info.Name()
-			if (strings.HasPrefix(base, ".") && base != ".") || base == "node_modules" || base == "vendor" || base == "graphify-out" || strings.HasPrefix(base, "node-") {
+			if (strings.HasPrefix(base, ".") && base != ".") || base == "node_modules" || base == "vendor" || base == "graphify-out" || base == "templates" || strings.HasPrefix(base, "node-") {
 				return filepath.SkipDir
 			}
 			return nil

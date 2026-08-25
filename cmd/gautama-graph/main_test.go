@@ -62,4 +62,9 @@ func TestGautamaGraphCLI_AntigravityInstall_Execution(t *testing.T) {
 	if _, err := os.Stat(scriptPath); err != nil {
 		t.Errorf("expected %s to exist on disk", scriptPath)
 	}
+
+	makefilePath := filepath.Join(tempDir, "Makefile")
+	if _, err := os.Stat(makefilePath); err != nil {
+		t.Errorf("expected %s to exist on disk", makefilePath)
+	}
 }

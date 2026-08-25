@@ -93,6 +93,13 @@ func (s *DefaultScaffolderService) Plan(ctx context.Context, opts ScaffoldOption
 			isMerge:      true,
 			mergeMarker:  "graphify-out/",
 		})
+		items = append(items, scaffoldItem{
+			relPath:      "Makefile",
+			templatePath: "templates/Makefile",
+			mode:         0644,
+			isMerge:      true,
+			mergeMarker:  "graphify-update:",
+		})
 	}
 
 	for _, item := range items {
@@ -157,12 +164,16 @@ func (s *DefaultScaffolderService) Plan(ctx context.Context, opts ScaffoldOption
 		} else {
 			// Merge item handling (.gitignore / AGENTS.md)
 			if !exists {
+				initContent := tmplContent
+				if item.relPath == filepath.Join(".agents", "AGENTS.md") {
+					initContent = "# Agent System Manifest\n\nLead AI Workflow Architect & System Gatekeeper: [nexus.md](./personas/nexus.md)\n\n" + tmplContent
+				}
 				action = ScaffoldAction{
 					RelativePath: item.relPath,
 					AbsolutePath: absTarget,
 					ActionType:   ActionCreateFile,
 					FileMode:     item.mode,
-					Content:      tmplContent,
+					Content:      initContent,
 					Reason:       "Created new manifest/ignore file with Graphify configurations",
 					ExistedPrior: false,
 				}
@@ -291,6 +302,13 @@ func (s *DefaultScaffolderService) Verify(ctx context.Context, workspaceRoot str
 		}
 	} else {
 		report.Errors = append(report.Errors, "missing scripts/graphify_sync.sh")
+	}
+
+	makefilePath := filepath.Join(cleanRoot, "Makefile")
+	if _, err := os.Stat(makefilePath); err == nil {
+		report.MakefileFound = true
+	} else {
+		report.Errors = append(report.Errors, "missing Makefile")
 	}
 
 	return report, nil

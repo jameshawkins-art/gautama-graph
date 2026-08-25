@@ -22,6 +22,7 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 		Minimal:       false,
 		WithScripts:   true,
 		WithGitIgnore: true,
+		WithMakefile:  true,
 	}
 
 	plan, err := svc.Plan(ctx, opts)
@@ -29,11 +30,11 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 		t.Fatalf("Plan returned unexpected error: %v", err)
 	}
 
-	if plan.TotalActions != 5 {
-		t.Errorf("expected 5 planned actions, got %d", plan.TotalActions)
+	if plan.TotalActions != 6 {
+		t.Errorf("expected 6 planned actions, got %d", plan.TotalActions)
 	}
-	if plan.CreatedFiles != 5 {
-		t.Errorf("expected 5 created files, got %d", plan.CreatedFiles)
+	if plan.CreatedFiles != 6 {
+		t.Errorf("expected 6 created files, got %d", plan.CreatedFiles)
 	}
 
 	if err := svc.Execute(ctx, plan); err != nil {
@@ -57,6 +58,14 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 		t.Errorf("expected %s to exist on disk", scriptPath)
 	} else if stat.Mode()&0111 == 0 {
 		t.Errorf("expected %s to be executable (0755), got mode %v", scriptPath, stat.Mode())
+	}
+
+	makefilePath := filepath.Join(tempDir, "Makefile")
+	content, err := os.ReadFile(makefilePath)
+	if err != nil {
+		t.Errorf("expected %s to exist on disk", makefilePath)
+	} else if !strings.Contains(string(content), "graphify-update:") {
+		t.Errorf("expected Makefile to contain graphify-update target")
 	}
 
 	report, err := svc.Verify(ctx, tempDir)
@@ -99,8 +108,8 @@ func TestScaffolder_IdempotentSkip(t *testing.T) {
 	if plan2.ModifiedFiles != 0 {
 		t.Errorf("expected 0 modified files on second run, got %d", plan2.ModifiedFiles)
 	}
-	if plan2.SkippedFiles != 5 {
-		t.Errorf("expected 5 skipped files on second run, got %d", plan2.SkippedFiles)
+	if plan2.SkippedFiles != 6 {
+		t.Errorf("expected 6 skipped files on second run, got %d", plan2.SkippedFiles)
 	}
 
 	// Ensure execution does nothing
@@ -185,7 +194,7 @@ func TestScaffolder_MergeFiles(t *testing.T) {
 	svc := scaffold.NewDefaultScaffolderService()
 	ctx := context.Background()
 
-	// Pre-create .gitignore and AGENTS.md with user content
+	// Pre-create .gitignore, AGENTS.md, and Makefile with user content
 	gitIgnorePath := filepath.Join(tempDir, ".gitignore")
 	_ = os.WriteFile(gitIgnorePath, []byte("node_modules/\n.env\n"), 0644)
 
@@ -193,6 +202,9 @@ func TestScaffolder_MergeFiles(t *testing.T) {
 	_ = os.MkdirAll(agentsDir, 0755)
 	agentsPath := filepath.Join(agentsDir, "AGENTS.md")
 	_ = os.WriteFile(agentsPath, []byte("# My Custom Agents\n- [architect.md](./personas/architect.md)\n"), 0644)
+
+	makefilePath := filepath.Join(tempDir, "Makefile")
+	_ = os.WriteFile(makefilePath, []byte(".PHONY: build test\nbuild:\n\tgo build\n"), 0644)
 
 	opts := scaffold.ScaffoldOptions{
 		WorkspaceRoot: tempDir,
@@ -224,6 +236,15 @@ func TestScaffolder_MergeFiles(t *testing.T) {
 	if !strings.Contains(string(agentsContent), "rules/graphify.md") {
 		t.Errorf("expected rules/graphify.md to be appended to AGENTS.md")
 	}
+
+	// Verify merged Makefile
+	makefileContent, _ := os.ReadFile(makefilePath)
+	if !strings.Contains(string(makefileContent), "build:") {
+		t.Errorf("expected original Makefile build target to be preserved")
+	}
+	if !strings.Contains(string(makefileContent), "graphify-update:") {
+		t.Errorf("expected graphify-update target to be appended to Makefile")
+	}
 }
 
 func TestScaffolder_MinimalMode(t *testing.T) {
@@ -249,10 +270,14 @@ func TestScaffolder_MinimalMode(t *testing.T) {
 		t.Fatalf("Execute failed: %v", err)
 	}
 
-	// Scripts should NOT exist
+	// Scripts and Makefile should NOT exist
 	scriptPath := filepath.Join(tempDir, "scripts", "graphify_sync.sh")
 	if _, err := os.Stat(scriptPath); err == nil {
 		t.Errorf("expected scripts/graphify_sync.sh NOT to exist in minimal mode")
+	}
+	makefilePath := filepath.Join(tempDir, "Makefile")
+	if _, err := os.Stat(makefilePath); err == nil {
+		t.Errorf("expected Makefile NOT to exist in minimal mode")
 	}
 }
 
@@ -311,8 +336,8 @@ func TestScaffolder_Verify_Failures(t *testing.T) {
 	if report.AllValid {
 		t.Errorf("expected AllValid to be false on empty workspace")
 	}
-	if len(report.Errors) != 3 {
-		t.Errorf("expected 3 errors on empty workspace, got %d", len(report.Errors))
+	if len(report.Errors) != 4 {
+		t.Errorf("expected 4 errors on empty workspace, got %d (%v)", len(report.Errors), report.Errors)
 	}
 
 	// Create non-executable script

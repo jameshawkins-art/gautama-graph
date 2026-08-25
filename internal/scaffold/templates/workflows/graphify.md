@@ -1,44 +1,32 @@
 ---
-description: Turn any folder of files into a navigable knowledge graph
-globs: *
-alwaysApply: false
+name: graphify
+description: Turn any folder of files into a navigable knowledge graph with automated AST and doc verification
 ---
 
-# Graphify Workflow Playbook
+# Workflow: graphify
 
-Run this workflow whenever turning a codebase, research folder, or documentation tree into a persistent, navigable knowledge graph.
+This project utilizes `github.com/jameshawkins-art/gautama-graph` v1.5.0 for turnkey knowledge graph orchestration, deep AST cross-package verification, and markdown doc link auditing.
 
-## Step 1: Run Gautama Graph Pipeline
-Run the unified multi-stage extraction and auditing pipeline:
-```bash
-GOWORK=off go run github.com/jameshawkins-art/gautama-graph/cmd/gautama-graph
-```
-Or execute the local shell script:
-```bash
-./scripts/graphify_sync.sh
-```
+## Turnkey Execution
 
-## Step 2: Query Knowledge Graph
-Use targeted knowledge queries to inspect architecture and call chains without token bloat:
-```bash
-# Query concept or relationship
-graphify query "<concept or question>"
+1. **Full Turnkey Pipeline & Strict Quality Gate**:
+   ```bash
+   make audit
+   ```
+   Executes binary resolution/caching, base graph extraction (`graphify update .`), deep Go AST code relationship audit, and strict markdown doc graph audit.
 
-# Find shortest call path between two symbols
-graphify path "<source_symbol>" "<target_symbol>"
+2. **Update Knowledge Graph Artifacts**:
+   ```bash
+   make graphify-update
+   ```
+   Refreshes `graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.html`, and `graphify-out/doc_graph_audit.json`.
 
-# Explain specific symbol or type definition
-graphify explain "<type_or_function_name>"
-```
+3. **Automated Markdown Doc Link Remediation**:
+   ```bash
+   make audit-remediate
+   ```
+   Automatically repairs broken relative markdown links across `.agents/` and `docs/` using canonical path calculation and fuzzy basename matching.
 
-## Step 3: Run Deterministic Relationship & Doc Audits
-```bash
-# Audit Go/Python AST relationships and prune phantoms
-GOWORK=off go run github.com/jameshawkins-art/gautama-graph/cmd/graphify-ast-audit
-
-# Audit Markdown doc link topology, orphans, and broken links
-GOWORK=off go run github.com/jameshawkins-art/gautama-graph/cmd/graphify-doc-audit
-
-# Auto-remediate broken Markdown relative links in-place
-GOWORK=off go run github.com/jameshawkins-art/gautama-graph/cmd/graphify-doc-audit --fix
-```
+4. **Standalone Audits**:
+   - `make audit-docs`: Sub-second doc graph validation (`cmd/graphify-doc-audit -strict`).
+   - `make audit-ast`: Go AST code relationship validation (`cmd/graphify-ast-audit`).

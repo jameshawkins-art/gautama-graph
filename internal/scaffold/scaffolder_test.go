@@ -30,11 +30,11 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 		t.Fatalf("Plan returned unexpected error: %v", err)
 	}
 
-	if plan.TotalActions != 7 {
-		t.Errorf("expected 7 planned actions, got %d", plan.TotalActions)
+	if plan.TotalActions != 21 {
+		t.Errorf("expected 21 planned actions, got %d", plan.TotalActions)
 	}
-	if plan.CreatedFiles != 7 {
-		t.Errorf("expected 7 created files, got %d", plan.CreatedFiles)
+	if plan.CreatedFiles != 21 {
+		t.Errorf("expected 21 created files, got %d", plan.CreatedFiles)
 	}
 
 	if err := svc.Execute(ctx, plan); err != nil {
@@ -58,6 +58,19 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 		t.Errorf("expected %s to exist on disk: %v", personaPath, err)
 	} else if !strings.Contains(string(personaContent), "# NEXUS PROTOCOL DIRECTIVE") {
 		t.Errorf("expected %s to contain NEXUS PROTOCOL DIRECTIVE", personaPath)
+	}
+
+	initPromptPath := filepath.Join(tempDir, "docs", "prompts", "init-project.md")
+	promptContent, err := os.ReadFile(initPromptPath)
+	if err != nil {
+		t.Errorf("expected %s to exist on disk: %v", initPromptPath, err)
+	} else if !strings.Contains(string(promptContent), "Project Tailoring & Antigravity 2.0 Environment Alignment Directive") {
+		t.Errorf("expected %s to contain Project Tailoring directive", initPromptPath)
+	}
+
+	sdlcWorkflowPath := filepath.Join(tempDir, ".agents", "workflows", "sdlc-workflow.md")
+	if _, err := os.Stat(sdlcWorkflowPath); err != nil {
+		t.Errorf("expected %s to exist on disk", sdlcWorkflowPath)
 	}
 
 	scriptPath := filepath.Join(tempDir, "scripts", "graphify_sync.sh")
@@ -85,6 +98,9 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 	}
 	if !report.PersonaFound {
 		t.Errorf("expected PersonaFound to be true in report")
+	}
+	if !report.PromptsFound {
+		t.Errorf("expected PromptsFound to be true in report")
 	}
 }
 
@@ -119,8 +135,8 @@ func TestScaffolder_IdempotentSkip(t *testing.T) {
 	if plan2.ModifiedFiles != 0 {
 		t.Errorf("expected 0 modified files on second run, got %d", plan2.ModifiedFiles)
 	}
-	if plan2.SkippedFiles != 7 {
-		t.Errorf("expected 7 skipped files on second run, got %d", plan2.SkippedFiles)
+	if plan2.SkippedFiles != 21 {
+		t.Errorf("expected 21 skipped files on second run, got %d", plan2.SkippedFiles)
 	}
 
 	// Ensure execution does nothing
@@ -273,18 +289,22 @@ func TestScaffolder_MinimalMode(t *testing.T) {
 		t.Fatalf("Plan failed: %v", err)
 	}
 
-	if plan.TotalActions != 4 {
-		t.Errorf("expected 4 actions in minimal mode, got %d", plan.TotalActions)
+	if plan.TotalActions != 18 {
+		t.Errorf("expected 18 actions in minimal mode, got %d", plan.TotalActions)
 	}
 
 	if err := svc.Execute(ctx, plan); err != nil {
 		t.Fatalf("Execute failed: %v", err)
 	}
 
-	// Persona should exist even in minimal mode
+	// Persona and prompts should exist even in minimal mode
 	personaPath := filepath.Join(tempDir, ".agents", "personas", "nexus.md")
 	if _, err := os.Stat(personaPath); err != nil {
 		t.Errorf("expected .agents/personas/nexus.md to exist in minimal mode")
+	}
+	promptPath := filepath.Join(tempDir, "docs", "prompts", "init-project.md")
+	if _, err := os.Stat(promptPath); err != nil {
+		t.Errorf("expected docs/prompts/init-project.md to exist in minimal mode")
 	}
 
 	// Scripts and Makefile should NOT exist
@@ -353,8 +373,8 @@ func TestScaffolder_Verify_Failures(t *testing.T) {
 	if report.AllValid {
 		t.Errorf("expected AllValid to be false on empty workspace")
 	}
-	if len(report.Errors) != 5 {
-		t.Errorf("expected 5 errors on empty workspace, got %d (%v)", len(report.Errors), report.Errors)
+	if len(report.Errors) != 6 {
+		t.Errorf("expected 6 errors on empty workspace, got %d (%v)", len(report.Errors), report.Errors)
 	}
 
 	// Create non-executable script

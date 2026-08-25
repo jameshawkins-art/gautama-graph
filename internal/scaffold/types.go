@@ -62,6 +62,7 @@ type ScaffoldVerificationReport struct {
 	RulesFound    bool      `json:"rules_found"`
 	WorkflowFound bool      `json:"workflow_found"`
 	PersonaFound  bool      `json:"persona_found"`
+	PromptsFound  bool      `json:"prompts_found"`
 	ScriptFound   bool      `json:"script_found"`
 	MakefileFound bool      `json:"makefile_found"`
 	Errors        []string  `json:"errors,omitempty"`

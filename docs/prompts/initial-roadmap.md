@@ -32,13 +32,13 @@ Before performing raw file reads, the roadmap team MUST query:
 ## 🛑 STRICT PRE-SDLC EXECUTION CONSTRAINTS
 1. **No SDLC Kick-Off**: This prompt is strictly PRE-SDLC. Do **NOT** generate requirements specification files in `docs/specs/` (e.g. `docs/specs/<NNN>-<feature>-requirements.md`).
 2. **No Implementation Code or Blueprints**: Writing Go source code, Python scripts, test files (`*_test.go`), or Phase 2 technical blueprints is strictly forbidden during roadmap formulation.
-3. **Target File ONLY**: The output must be written directly to [`docs/roadmap/roadmap.md`](file:///home/slvr/source/gautama-graph/docs/roadmap/roadmap.md).
+3. **Target File ONLY**: The output must be written directly to [docs/roadmap/roadmap.md](../roadmap/roadmap.md).
 
 ---
 
 ## 📋 REQUIRED DELIVERABLES & OUTPUT FORMAT
 
-Generate a comprehensive, structured Master Product Roadmap document saved to [`docs/roadmap/roadmap.md`](file:///home/slvr/source/gautama-graph/docs/roadmap/roadmap.md) containing:
+Generate a comprehensive, structured Master Product Roadmap document saved to [docs/roadmap/roadmap.md](../roadmap/roadmap.md) containing:
 1. **Executive Summary**: Strategic mission of Gautama Graph (deterministic code AST auditing, phantom edge pruning, Markdown link graph integrity, atomic persistence).
 2. **Architecture & Subsystem Alignment**: Overview of `internal/auditor/` (Engine, Parser, Evaluator, PythonBridge, Store, DocAuditor), `cmd/`, and `python/ast_auditor_bridge.py`.
 3. **Master Feature Roadmap Table**:

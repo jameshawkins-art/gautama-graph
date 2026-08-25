@@ -56,19 +56,93 @@ func (s *DefaultScaffolderService) Plan(ctx context.Context, opts ScaffoldOption
 	}
 
 	items := []scaffoldItem{
+		// Rules
 		{
 			relPath:      filepath.Join(".agents", "rules", "graphify.md"),
 			templatePath: "templates/rules/graphify.md",
 			mode:         0644,
 		},
+		// Workflows
 		{
 			relPath:      filepath.Join(".agents", "workflows", "graphify.md"),
 			templatePath: "templates/workflows/graphify.md",
 			mode:         0644,
 		},
 		{
+			relPath:      filepath.Join(".agents", "workflows", "sdlc-workflow.md"),
+			templatePath: "templates/workflows/sdlc-workflow.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join(".agents", "workflows", "bug-workflow.md"),
+			templatePath: "templates/workflows/bug-workflow.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join(".agents", "workflows", "graph-sync-workflow.md"),
+			templatePath: "templates/workflows/graph-sync-workflow.md",
+			mode:         0644,
+		},
+		// Personas
+		{
 			relPath:      filepath.Join(".agents", "personas", "nexus.md"),
 			templatePath: "templates/personas/nexus.md",
+			mode:         0644,
+		},
+		// Prompts
+		{
+			relPath:      filepath.Join("docs", "prompts", "init-project.md"),
+			templatePath: "templates/prompts/init-project.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "initial-roadmap.md"),
+			templatePath: "templates/prompts/initial-roadmap.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "roadmap-item.md"),
+			templatePath: "templates/prompts/roadmap-item.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "sdlc-step1.md"),
+			templatePath: "templates/prompts/sdlc-step1.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "sdlc-step2.md"),
+			templatePath: "templates/prompts/sdlc-step2.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "sdlc-step3.md"),
+			templatePath: "templates/prompts/sdlc-step3.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "sdlc-step4.md"),
+			templatePath: "templates/prompts/sdlc-step4.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "bug-step1.md"),
+			templatePath: "templates/prompts/bug-step1.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "bug-step2.md"),
+			templatePath: "templates/prompts/bug-step2.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "bug-step3.md"),
+			templatePath: "templates/prompts/bug-step3.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "engine-audit.md"),
+			templatePath: "templates/prompts/engine-audit.md",
 			mode:         0644,
 		},
 	}
@@ -304,6 +378,14 @@ func (s *DefaultScaffolderService) Verify(ctx context.Context, workspaceRoot str
 	} else {
 		report.AllValid = false
 		report.Errors = append(report.Errors, "missing .agents/personas/nexus.md")
+	}
+
+	promptPath := filepath.Join(cleanRoot, "docs", "prompts", "init-project.md")
+	if _, err := os.Stat(promptPath); err == nil {
+		report.PromptsFound = true
+	} else {
+		report.AllValid = false
+		report.Errors = append(report.Errors, "missing docs/prompts/init-project.md")
 	}
 
 	scriptPath := filepath.Join(cleanRoot, "scripts", "graphify_sync.sh")

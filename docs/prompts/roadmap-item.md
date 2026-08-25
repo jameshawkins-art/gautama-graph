@@ -28,19 +28,19 @@ Before performing raw file reads, `@feature-engineer.md` and `@nexus.md` MUST qu
 1. **No SDLC Kick-Off**: This prompt is strictly PRE-SDLC. Do **NOT** generate requirements specification files in `docs/specs/` (e.g. `docs/specs/<NNN>-<feature>-requirements.md`).
 2. **No Implementation Code or Blueprints**: Writing Go source code, Python scripts, test files (`*_test.go`), or Phase 2 technical blueprints is strictly forbidden during roadmap item generation.
 3. **Target Files ONLY**:
-   - Master Roadmap: Update [`docs/roadmap/roadmap.md`](file:///home/slvr/source/gautama-graph/docs/roadmap/roadmap.md) (Master Feature Table + Detailed Specifications section).
-   - Dedicated Item Spec: Create [`docs/roadmap/<topic>-roadmap-<NNN>.md`](file:///home/slvr/source/gautama-graph/docs/roadmap/) (e.g. `docs/roadmap/ast-selector-depth-roadmap-001.md`).
+   - Master Roadmap: Update [docs/roadmap/roadmap.md](../roadmap/roadmap.md) (Master Feature Table + Detailed Specifications section).
+   - Dedicated Item Spec: Create [docs/roadmap/<topic>-roadmap-<NNN>.md](../roadmap/) (e.g. `docs/roadmap/ast-selector-depth-roadmap-001.md`).
 
 ---
 
 ## 📋 REQUIRED DELIVERABLES & OUTPUT FORMAT
 
-1. **Master Roadmap Update ([docs/roadmap/roadmap.md](file:///home/slvr/source/gautama-graph/docs/roadmap/roadmap.md))**:
+1. **Master Roadmap Update ([docs/roadmap/roadmap.md](../roadmap/roadmap.md))**:
    - Query `docs/roadmap/` for the highest 3-digit zero-padded sequence code `NNN` and increment by 1 (`NNN+1`).
    - Append new row to the Master Feature Roadmap Table with status `(🔴 NOT STARTED)`.
    - Append detailed item summary under Detailed Item Specifications section.
 
-2. **Dedicated Roadmap Item Document ([docs/roadmap/<topic>-roadmap-<NNN>.md](file:///home/slvr/source/gautama-graph/docs/roadmap/))**:
+2. **Dedicated Roadmap Item Document ([docs/roadmap/<topic>-roadmap-<NNN>.md](../roadmap/))**:
    - **Header & Metadata**: Document Title, Sequence Code `NNN`, Persona Drivers & Gatekeepers, Status `(🔴 NOT STARTED)`.
    - **1. Executive Summary & Strategic Objective**: Problem statement, target architecture, knowledge graph value proposition.
    - **2. Subsystem / Engine Component Matrix**: Table mapping Go packages, interfaces in `internal/auditor/types.go`, Python scripts, and storage paths using Graphify queries.

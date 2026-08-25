@@ -66,6 +66,11 @@ func (s *DefaultScaffolderService) Plan(ctx context.Context, opts ScaffoldOption
 			templatePath: "templates/workflows/graphify.md",
 			mode:         0644,
 		},
+		{
+			relPath:      filepath.Join(".agents", "personas", "nexus.md"),
+			templatePath: "templates/personas/nexus.md",
+			mode:         0644,
+		},
 	}
 
 	if !opts.Minimal {
@@ -291,6 +296,14 @@ func (s *DefaultScaffolderService) Verify(ctx context.Context, workspaceRoot str
 	} else {
 		report.AllValid = false
 		report.Errors = append(report.Errors, "missing .agents/workflows/graphify.md")
+	}
+
+	personaPath := filepath.Join(cleanRoot, ".agents", "personas", "nexus.md")
+	if _, err := os.Stat(personaPath); err == nil {
+		report.PersonaFound = true
+	} else {
+		report.AllValid = false
+		report.Errors = append(report.Errors, "missing .agents/personas/nexus.md")
 	}
 
 	scriptPath := filepath.Join(cleanRoot, "scripts", "graphify_sync.sh")

@@ -30,3 +30,11 @@
 - **Zero Suppression**: Never swallow errors or use silent fallback defaults without returning an explicit, wrapped error (`fmt.Errorf("...: %w", err)`).
 - **Public API Export**: All exported Go structs, interfaces, methods, and constants must follow PascalCase naming with comprehensive godoc comments.
 - **AST Knowledge Graph Sync**: Following any modification to codebase files, developers and agents MUST execute `graphify update .` and `go run cmd/graphify-ast-audit/main.go` to maintain graph accuracy.
+
+---
+
+## 5. Test-Driven Development (TDD) & Production Call-Site Invariant
+
+- **Red-Green-Refactor Mandatory**: Automated unit and integration tests MUST be authored and proven to fail before writing production code.
+- **Production Call-Site Invariant**: Every new helper, parser method, or utility function MUST be wired into its production caller path ($C_{prod} > 0$) adhering to [.agents/rules/tdd-cycle.md](./rules/tdd-cycle.md). Test-only function omissions are strictly prohibited.
+- **DRY Invariant**: Duplicate inline logic must be consolidated to use centralized production utilities.

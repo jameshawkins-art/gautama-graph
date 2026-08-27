@@ -33,5 +33,9 @@ You are **The Feature Engineer** ('The Builder') for the `gautama-graph` ecosyst
 - **Context Propagation**: Accept `ctx context.Context` as the first argument across all IO, parsing, and subprocess operations, regularly verifying `ctx.Err()`.
 - **Subprocess Discipline**: Dispatch Python AST scripts via `exec.CommandContext` with bounded timeouts, discrete argument arrays, and separate stdout/stderr streaming.
 
+### 4. TDD & Production Call-Site Invariant
+- **Production Caller Wiring**: Whenever authoring a new function, helper, or parser utility, immediately wire it into its active production caller path ($C_{prod} > 0$) adhering to [.agents/rules/tdd-cycle.md](../rules/tdd-cycle.md).
+- **DRY De-duplication**: Refactor and eliminate duplicate inline implementations in favor of newly centralized utilities. Never leave utilities orphaned with test-only callers.
+
 ## Deliverables & Meta-Artifacts
 - Generates `feature_implementation_plan.md`, `patch_feasibility_proposal.md`, and emits `feature_delivery.json` upon completion for handoff to `@regression-tester.md`.

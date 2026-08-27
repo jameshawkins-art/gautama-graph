@@ -1,4 +1,4 @@
-[.agents/personas/nexus.md](../../.agents/personas/nexus.md)
+[.agents/personas/nexus.md](../../.agents/personas/nexus.md) [.agents/rules/tdd-cycle.md](../../.agents/rules/tdd-cycle.md)
 
 ## CONTEXT & OBJECTIVE
 Execute Phase 3 (Deterministic Code Implementation) and Phase 4 (Regression & SQA Verification Gate) of the Software Development Lifecycle for the approved technical blueprint in `docs/specs/` (e.g. `docs/specs/<NNN>-<feature-name>-architecture-blueprint.md`).
@@ -22,17 +22,23 @@ To prevent **context rot** and token bloat:
 ---
 
 ## 🛑 PHASE 3 & 4 EXECUTION CONSTRAINTS
-1. **Forbidden Release Actions**: Modifying project release status matrices in roadmap documents (`docs/roadmap/roadmap.md`) or claiming release completion is strictly forbidden in Step 3.
-2. **Mandatory Test Suite Execution**: The project's automated test suite MUST be executed and pass 100% with zero race conditions or uncaught errors.
-3. **Artifact Output**: Create or update the `walkthrough.md` artifact summarizing code changes, test results, and coverage metrics, and emit `feature_delivery.json`.
-4. **Phase Boundary Rule**: Completing Step 3 certifies local implementation and regression verification ONLY. Agents MUST stop after Phase 4 and wait for explicit user invocation of Step 4 (`execute docs/prompts/sdlc-step4.md with docs/specs/<NNN>-<feature-name>-architecture-blueprint.md`) in a subsequent prompt.
+1. **Test-Driven Development (TDD) & Production Call-Site Invariant ([.agents/rules/tdd-cycle.md](../../.agents/rules/tdd-cycle.md))**:
+   - **Red Stage**: Author failing automated tests targeting the true entrypoint/caller before writing production code.
+   - **Green Stage**: Write minimal production code and **wire all newly declared utility functions directly into production caller paths**.
+   - **Refactor Stage**: Eliminate duplicate inline logic across packages, verify AST caller graph connections ($C_{prod} > 0$), and ensure zero test-only orphaned utilities.
+2. **Forbidden Release Actions**: Modifying project release status matrices in roadmap documents (`docs/roadmap/roadmap.md`) or claiming release completion is strictly forbidden in Step 3.
+3. **Mandatory Test Suite Execution**: The project's automated test suite MUST be executed and pass 100% with zero race conditions or uncaught errors.
+4. **Artifact Output**: Create or update the `walkthrough.md` artifact summarizing code changes, test results, and coverage metrics, and emit `feature_delivery.json`.
+5. **Phase Boundary Rule**: Completing Step 3 certifies local implementation and regression verification ONLY. Agents MUST stop after Phase 4 and wait for explicit user invocation of Step 4 (`execute docs/prompts/sdlc-step4.md with docs/specs/<NNN>-<feature-name>-architecture-blueprint.md`) in a subsequent prompt.
 
 ---
 
 ## 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 
-### 1. Hardened Implementation
+### 1. Hardened Implementation & Production Call-Site Wiring
 - Implement the requested modules, interfaces, and CLI commands according to the architecture blueprint.
+- Wire all newly authored utilities directly into their production caller paths (handlers, services, repositories, pipelines).
+- Eliminate duplicate inline logic across packages in favor of centralized utilities (DRY invariant).
 - Enforce standard naming, documentation, and error handling conventions.
 - Enforce the two-phase atomic write protocol (`.tmp` buffer + atomic rename) on state mutations.
 - Enforce zero-trust path containment checks.

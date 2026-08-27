@@ -43,7 +43,7 @@ Execute the following alignment steps:
 - Ensure Graphify knowledge graph rules match workspace commands.
 
 ### 4. Tailor Prompt Templates (`docs/prompts/*.md`)
-- Update `initial-roadmap.md`, `roadmap-item.md`, `sdlc-step1.md` through `sdlc-step4.md`, `bug-step1.md` through `bug-step3.md`, and `engine-audit.md` with:
+- Update `initial-roadmap.md`, `roadmap-item.md`, `sdlc-step1.md` through `sdlc-step4.md`, `bug-step1.md` through `bug-step3.md`, `engine-audit.md`, and `dead-code-audit.md` with:
   - Exact package paths (e.g. `src/`, `internal/`, `pkg/`, `lib/`).
   - Stack-specific test and build commands.
   - Correct persona handle links.

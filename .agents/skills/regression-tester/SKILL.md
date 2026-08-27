@@ -48,6 +48,11 @@ When executing test suites or writing regression tests, you MUST adhere strictly
 * **Strict 85% Minimum Coverage**: Any pull request or feature branch modifying `internal/auditor/` MUST maintain >= 85% statement coverage. If coverage drops below 85%, the Guard agent MUST flag a regression and fail the release gate.
 * **Fuzz Testing for Parsers**: Implement Go native fuzzing (`func FuzzParseDocLinks(f *testing.F)`) for user-input parsers (e.g., Markdown regex extraction in `doc_auditor.go`).
 
+### 1.5 TDD Red-Green-Refactor Protocol & Production Call-Site Auditing
+* **Red Stage Verification**: Ensure automated regression/integration tests are written and proven to FAIL before production changes are introduced.
+* **Production Call-Site Invariant ($C_{prod} > 0$)**: Audit all newly declared functions in `internal/` and `cmd/` to verify they have $\ge 1$ active caller in non-test production code. Reject any change where a utility is only called inside `*_test.go`.
+* **DRY & Integration Verification**: Confirm that duplicate inline code has been refactored to call the centralized utility and that tests transitively exercise the production callers.
+
 ---
 
 ## Section 2: Expected Antigravity Artifact Deliverables

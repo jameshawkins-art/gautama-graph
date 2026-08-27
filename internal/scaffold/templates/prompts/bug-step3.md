@@ -1,4 +1,4 @@
-[.agents/personas/nexus.md](../../.agents/personas/nexus.md)
+[.agents/personas/nexus.md](../../.agents/personas/nexus.md) [.agents/rules/tdd-cycle.md](../../.agents/rules/tdd-cycle.md)
 
 ## CONTEXT & OBJECTIVE
 Execute Phase B3 (Test-Driven Bug Remediation & Regression Verification) and Phase B4 (SQA Certification & Defect Closure) of the Bug Remediation Lifecycle for the approved bug blueprint in `docs/bugs/` (e.g. `docs/bugs/bug-<description>-<id>.md`).
@@ -22,7 +22,10 @@ To prevent **context rot** and token bloat:
 ---
 
 ## 🛑 PHASE B3 & B4 EXECUTION CONSTRAINTS
-1. **Test-Driven Discipline**: The minimal reproduction test written in Phase B1 MUST fail before the fix and pass cleanly after applying the patch.
+1. **Test-Driven Discipline & Production Call-Site Invariant ([.agents/rules/tdd-cycle.md](../../.agents/rules/tdd-cycle.md))**:
+   - **Red Stage**: Author a failing automated regression test targeting the actual integration entrypoint to prove the defect BEFORE applying any code fix.
+   - **Green Stage**: Write minimal production code and ensure all newly authored utility functions are directly consumed by production caller paths.
+   - **Refactor Stage**: Eliminate duplicate inline logic, verify AST production call sites ($C_{prod} > 0$), and ensure zero test-only orphaned utilities.
 2. **Full Test Suite Verification**: The full test suite MUST pass 100% with zero race conditions or unhandled errors.
 3. **Artifact Output**: Update the target bug specification document (`docs/bugs/bug-<description>-<id>.md`) status to `CLOSED (🟢 RESOLVED)`, emit `remediation_meta.json`, and update `walkthrough.md`.
 4. **Phase Boundary Rule**: Completing Phase B3 & B4 certifies bug resolution, regression immunity, and defect closure.
@@ -31,8 +34,10 @@ To prevent **context rot** and token bloat:
 
 ## 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 
-### 1. Targeted Code Remediation
+### 1. Targeted Code Remediation & Refactor
 - Apply the minimal, surgical patch strictly confined to the faulting execution path.
+- Wire any newly authored helper or utility functions directly into production caller paths ($C_{prod} > 0$).
+- Eliminate duplicate inline logic across packages in favor of centralized utilities (DRY invariant).
 - Ensure error wrapping with context, immediate resource cleanup, and stream hygiene.
 - Emit machine-readable meta-artifact `remediation_meta.json`.
 

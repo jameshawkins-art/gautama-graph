@@ -1,4 +1,4 @@
-[.agents/personas/feature-engineer.md](../../.agents/personas/feature-engineer.md) [.agents/personas/regression-tester.md](../../.agents/personas/regression-tester.md) [.agents/personas/security-auditor.md](../../.agents/personas/security-auditor.md) [.agents/personas/nexus.md](../../.agents/personas/nexus.md)
+[.agents/personas/feature-engineer.md](../../.agents/personas/feature-engineer.md) [.agents/personas/regression-tester.md](../../.agents/personas/regression-tester.md) [.agents/personas/security-auditor.md](../../.agents/personas/security-auditor.md) [.agents/personas/nexus.md](../../.agents/personas/nexus.md) [.agents/rules/tdd-cycle.md](../../.agents/rules/tdd-cycle.md)
 
 ## CONTEXT & OBJECTIVE
 Execute Phase 3 (Deterministic Code Implementation) and Phase 4 (Regression & SQA Verification Gate) of the Gautama Graph Software Development Lifecycle for the approved technical blueprint in `docs/specs/` (e.g. `docs/specs/<NNN>-<feature-name>-architecture-blueprint.md`).
@@ -22,17 +22,23 @@ To prevent **context rot** and token bloat:
 ---
 
 ## 🛑 PHASE 3 & 4 EXECUTION CONSTRAINTS
-1. **Forbidden Release Actions**: Modifying project release status matrices in roadmap documents (`docs/roadmap/roadmap.md`) or claiming Phase 5/6 release completion is strictly forbidden in Step 3.
-2. **Mandatory Test Suite Execution**: `GOWORK=off go test -timeout 30s -v -race ./internal/auditor/...` MUST be executed and pass 100% with zero race conditions.
-3. **Artifact Output**: Create or update the `walkthrough.md` artifact summarizing code changes, unit test results, and coverage metrics, and emit `feature_delivery.json`.
-4. **Phase Boundary Rule**: Completing Step 3 / Phase 3 & 4 certifies local implementation and regression verification ONLY. Agents MUST stop after Phase 4 and wait for explicit user invocation of Step 4 / Phase 5 & 6 (`execute docs/prompts/sdlc-step4.md with docs/specs/<NNN>-<feature-name>-architecture-blueprint.md`) in a subsequent prompt.
+1. **Test-Driven Development (TDD) & Production Call-Site Invariant ([.agents/rules/tdd-cycle.md](../../.agents/rules/tdd-cycle.md))**:
+   - **Red Stage**: Author failing automated tests targeting the true entrypoint/caller before writing production code.
+   - **Green Stage**: Write minimal production code and **wire all newly declared utility functions directly into production caller paths**.
+   - **Refactor Stage**: Eliminate duplicate inline logic across packages, verify AST caller graph connections ($C_{prod} > 0$), and ensure zero test-only orphaned utilities.
+2. **Forbidden Release Actions**: Modifying project release status matrices in roadmap documents (`docs/roadmap/roadmap.md`) or claiming Phase 5/6 release completion is strictly forbidden in Step 3.
+3. **Mandatory Test Suite Execution**: `GOWORK=off go test -timeout 30s -v -race ./internal/auditor/...` MUST be executed and pass 100% with zero race conditions.
+4. **Artifact Output**: Create or update the `walkthrough.md` artifact summarizing code changes, unit test results, and coverage metrics, and emit `feature_delivery.json`.
+5. **Phase Boundary Rule**: Completing Step 3 / Phase 3 & 4 certifies local implementation and regression verification ONLY. Agents MUST stop after Phase 4 and wait for explicit user invocation of Step 4 / Phase 5 & 6 (`execute docs/prompts/sdlc-step4.md with docs/specs/<NNN>-<feature-name>-architecture-blueprint.md`) in a subsequent prompt.
 
 ---
 
 ## 📋 REQUIRED DELIVERABLES & PERSONA RESPONSIBILITIES
 
-### 1. Hardened Go Engine Implementation (`@feature-engineer.md`, `@nexus.md`)
+### 1. Hardened Go Engine Implementation & Production Call-Site Wiring (`@feature-engineer.md`, `@nexus.md`)
 - Implement Go 1.26+ AST parsing, selector evaluation, doc-graph analysis, and CLI commands in `internal/auditor/` and `cmd/`.
+- Wire all newly authored utilities directly into production caller paths (e.g. engine passes, evaluators, CLI routines).
+- Eliminate duplicate inline logic across packages in favor of centralized utilities (DRY invariant).
 - Enforce PascalCase naming with godoc comments on all exported identifiers.
 - Enforce the two-phase atomic write protocol (`.tmp` buffer + `os.Rename`) on all graph store mutations.
 - Enforce zero-trust path containment checks (`filepath.Clean`, `filepath.Abs`, root prefix validation).

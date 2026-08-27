@@ -40,6 +40,11 @@ When developing or modifying features within the `gautama-graph` codebase, you M
 ### 1.5 Versioning & Git Tag Consistency
 * **Semantic Versioning**: When modifying public interfaces in `internal/auditor/types.go`, ensure backwards compatibility. If breaking changes are unavoidable, update the module version path and prepare git tag release notes (`vX.Y.Z`).
 
+### 1.6 Production Call-Site Invariant & TDD Alignment
+* **Production Call-Site Invariant**: Whenever authoring a new helper function, parser method, or utility, immediately wire it into active production call paths (e.g., within `internal/auditor/` engine routines or `cmd/` CLI entrypoints).
+* **Zero Orphaned Functions**: Implementing a function tested only within `*_test.go` while leaving production codepaths using duplicate inline logic is strictly classified as a **CRITICAL INCOMPLETE INTEGRATION DEFECT**.
+* **DRY De-duplication**: Search and refactor any existing duplicate inline logic across packages to call the centralized function. Verify $C_{prod} > 0$ with `go run cmd/graphify-ast-audit/main.go`.
+
 ---
 
 ## Section 2: Expected Antigravity Artifact Deliverables

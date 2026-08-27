@@ -30,11 +30,11 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 		t.Fatalf("Plan returned unexpected error: %v", err)
 	}
 
-	if plan.TotalActions != 21 {
-		t.Errorf("expected 21 planned actions, got %d", plan.TotalActions)
+	if plan.TotalActions != 23 {
+		t.Errorf("expected 23 planned actions, got %d", plan.TotalActions)
 	}
-	if plan.CreatedFiles != 21 {
-		t.Errorf("expected 21 created files, got %d", plan.CreatedFiles)
+	if plan.CreatedFiles != 23 {
+		t.Errorf("expected 23 created files, got %d", plan.CreatedFiles)
 	}
 
 	if err := svc.Execute(ctx, plan); err != nil {
@@ -45,6 +45,14 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 	rulesPath := filepath.Join(tempDir, ".agents", "rules", "graphify.md")
 	if _, err := os.Stat(rulesPath); err != nil {
 		t.Errorf("expected %s to exist on disk", rulesPath)
+	}
+
+	tddRulesPath := filepath.Join(tempDir, ".agents", "rules", "tdd-cycle.md")
+	tddContent, err := os.ReadFile(tddRulesPath)
+	if err != nil {
+		t.Errorf("expected %s to exist on disk: %v", tddRulesPath, err)
+	} else if !strings.Contains(string(tddContent), "Test-Driven Development (TDD) Red-Green-Refactor") {
+		t.Errorf("expected %s to contain TDD Red-Green-Refactor content", tddRulesPath)
 	}
 
 	workflowPath := filepath.Join(tempDir, ".agents", "workflows", "graphify.md")
@@ -66,6 +74,14 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 		t.Errorf("expected %s to exist on disk: %v", initPromptPath, err)
 	} else if !strings.Contains(string(promptContent), "Project Tailoring & Antigravity 2.0 Environment Alignment Directive") {
 		t.Errorf("expected %s to contain Project Tailoring directive", initPromptPath)
+	}
+
+	deadCodePromptPath := filepath.Join(tempDir, "docs", "prompts", "dead-code-audit.md")
+	deadCodeContent, err := os.ReadFile(deadCodePromptPath)
+	if err != nil {
+		t.Errorf("expected %s to exist on disk: %v", deadCodePromptPath, err)
+	} else if !strings.Contains(string(deadCodeContent), "Unused Symbol, Dead Code & Test-Only Function Audit Directive") {
+		t.Errorf("expected %s to contain Unused Symbol audit content", deadCodePromptPath)
 	}
 
 	sdlcWorkflowPath := filepath.Join(tempDir, ".agents", "workflows", "sdlc-workflow.md")
@@ -135,8 +151,8 @@ func TestScaffolder_IdempotentSkip(t *testing.T) {
 	if plan2.ModifiedFiles != 0 {
 		t.Errorf("expected 0 modified files on second run, got %d", plan2.ModifiedFiles)
 	}
-	if plan2.SkippedFiles != 21 {
-		t.Errorf("expected 21 skipped files on second run, got %d", plan2.SkippedFiles)
+	if plan2.SkippedFiles != 23 {
+		t.Errorf("expected 23 skipped files on second run, got %d", plan2.SkippedFiles)
 	}
 
 	// Ensure execution does nothing
@@ -289,15 +305,19 @@ func TestScaffolder_MinimalMode(t *testing.T) {
 		t.Fatalf("Plan failed: %v", err)
 	}
 
-	if plan.TotalActions != 18 {
-		t.Errorf("expected 18 actions in minimal mode, got %d", plan.TotalActions)
+	if plan.TotalActions != 20 {
+		t.Errorf("expected 20 actions in minimal mode, got %d", plan.TotalActions)
 	}
 
 	if err := svc.Execute(ctx, plan); err != nil {
 		t.Fatalf("Execute failed: %v", err)
 	}
 
-	// Persona and prompts should exist even in minimal mode
+	// Persona, rules, and prompts should exist even in minimal mode
+	rulesPath := filepath.Join(tempDir, ".agents", "rules", "tdd-cycle.md")
+	if _, err := os.Stat(rulesPath); err != nil {
+		t.Errorf("expected .agents/rules/tdd-cycle.md to exist in minimal mode")
+	}
 	personaPath := filepath.Join(tempDir, ".agents", "personas", "nexus.md")
 	if _, err := os.Stat(personaPath); err != nil {
 		t.Errorf("expected .agents/personas/nexus.md to exist in minimal mode")
@@ -373,8 +393,8 @@ func TestScaffolder_Verify_Failures(t *testing.T) {
 	if report.AllValid {
 		t.Errorf("expected AllValid to be false on empty workspace")
 	}
-	if len(report.Errors) != 6 {
-		t.Errorf("expected 6 errors on empty workspace, got %d (%v)", len(report.Errors), report.Errors)
+	if len(report.Errors) != 7 {
+		t.Errorf("expected 7 errors on empty workspace, got %d (%v)", len(report.Errors), report.Errors)
 	}
 
 	// Create non-executable script

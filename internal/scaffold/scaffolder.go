@@ -62,6 +62,11 @@ func (s *DefaultScaffolderService) Plan(ctx context.Context, opts ScaffoldOption
 			templatePath: "templates/rules/graphify.md",
 			mode:         0644,
 		},
+		{
+			relPath:      filepath.Join(".agents", "rules", "tdd-cycle.md"),
+			templatePath: "templates/rules/tdd-cycle.md",
+			mode:         0644,
+		},
 		// Workflows
 		{
 			relPath:      filepath.Join(".agents", "workflows", "graphify.md"),
@@ -143,6 +148,11 @@ func (s *DefaultScaffolderService) Plan(ctx context.Context, opts ScaffoldOption
 		{
 			relPath:      filepath.Join("docs", "prompts", "engine-audit.md"),
 			templatePath: "templates/prompts/engine-audit.md",
+			mode:         0644,
+		},
+		{
+			relPath:      filepath.Join("docs", "prompts", "dead-code-audit.md"),
+			templatePath: "templates/prompts/dead-code-audit.md",
 			mode:         0644,
 		},
 	}
@@ -357,11 +367,23 @@ func (s *DefaultScaffolderService) Verify(ctx context.Context, workspaceRoot str
 	}
 
 	rulesPath := filepath.Join(cleanRoot, ".agents", "rules", "graphify.md")
+	tddRulesPath := filepath.Join(cleanRoot, ".agents", "rules", "tdd-cycle.md")
+	hasGraphifyRules := false
+	hasTDDRules := false
 	if _, err := os.Stat(rulesPath); err == nil {
-		report.RulesFound = true
+		hasGraphifyRules = true
 	} else {
 		report.AllValid = false
 		report.Errors = append(report.Errors, "missing .agents/rules/graphify.md")
+	}
+	if _, err := os.Stat(tddRulesPath); err == nil {
+		hasTDDRules = true
+	} else {
+		report.AllValid = false
+		report.Errors = append(report.Errors, "missing .agents/rules/tdd-cycle.md")
+	}
+	if hasGraphifyRules && hasTDDRules {
+		report.RulesFound = true
 	}
 
 	workflowPath := filepath.Join(cleanRoot, ".agents", "workflows", "graphify.md")

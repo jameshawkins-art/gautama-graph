@@ -81,7 +81,27 @@ When auditing relationships, edges are classified into three provenance categori
 
 ## 🛠️ CLI Utilities & Usage
 
-### 1. AST Code Relationship Auditor (`cmd/graphify-ast-audit`)
+### 1. Knowledge Graph Query & Navigation (`cmd/gautama-graph`)
+
+Performs scoped, token-optimized knowledge graph queries, pathfinding, and node inspection:
+
+```bash
+# Query the knowledge graph with a natural language question
+make graphify-query Q="How does the AST auditor work?"
+# Or directly: go run ./cmd/gautama-graph query "How does the AST auditor work?"
+
+# Find the shortest call/dependency path between two symbols
+make graphify-path A="Engine" B="ASTParser"
+# Or directly: go run ./cmd/gautama-graph path "Engine" "ASTParser"
+
+# Explain a specific node or architectural concept
+make graphify-explain C="DocGraphAuditor"
+# Or directly: go run ./cmd/gautama-graph explain "DocGraphAuditor"
+```
+
+---
+
+### 2. AST Code Relationship Auditor (`cmd/graphify-ast-audit`)
 
 Audits candidate code edges in `graphify-out/graph.json` against actual Go and Python AST structures.
 
@@ -107,7 +127,7 @@ go run cmd/graphify-ast-audit/main.go --verbose
 
 ---
 
-### 2. Markdown Documentation Graph Auditor (`cmd/graphify-doc-audit`)
+### 3. Markdown Documentation Graph Auditor (`cmd/graphify-doc-audit`)
 
 Audits the structural integrity of documentation across the workspace.
 
@@ -145,7 +165,7 @@ import (
 	"log"
 	"time"
 
-	"gautama-social/internal/graphify/auditor"
+	"github.com/jameshawkins-art/gautama-graph/internal/auditor"
 )
 
 func main() {
@@ -179,7 +199,7 @@ import (
 	"fmt"
 	"log"
 
-	"gautama-social/internal/graphify/auditor"
+	"github.com/jameshawkins-art/gautama-graph/internal/auditor"
 )
 
 func main() {
@@ -225,10 +245,11 @@ Pipeline execution sequence:
 
 ## 🧪 Testing
 
-Run all unit and integration tests for the graphify package:
+Run all unit and integration tests across the workspace:
 
 ```bash
-go test -v ./internal/graphify/auditor/...
+make test
+# Or directly: GOWORK=off go test -v -race ./...
 ```
 
 Test coverage includes:
@@ -237,11 +258,67 @@ Test coverage includes:
 - Path traversal security validation
 - Full graph file auditing and atomic persistence
 - Doc graph parser, orphan node detection, and broken link identification
+- Knowledge graph query, path, and explain execution
+
+---
+
+## 🏷️ Release & Tagging Strategy
+
+`gautama-graph` follows [Semantic Versioning (SemVer)](https://semver.org/) for all release artifacts, tags, and public API interfaces (`vMAJOR.MINOR.PATCH`).
+
+### Tagging Workflow
+
+Releases and deployment milestones are tagged directly in Git and pushed to origin:
+
+```bash
+git tag v1.6.2 && git push origin v1.6.2
+```
+
+### Pre-Release Verification Gates
+
+Before creating and pushing any release tag, ensure all automated quality gates pass:
+
+1. **Unit & Race Test Suite**:
+   ```bash
+   make test
+   # Runs: GOWORK=off go test -v -race ./...
+   ```
+2. **AST Code Audit & Provenance Verification**:
+   ```bash
+   make audit-ast
+   # Audits candidate edges against actual Go/Python ASTs
+   ```
+3. **Markdown Documentation Link & Topology Audit**:
+   ```bash
+   make audit-docs
+   # Validates all workspace Markdown links and verifies zero broken relative references
+   ```
+4. **Git Working Tree Cleanliness**:
+   ```bash
+   git status
+   # Ensure all changes are committed and working tree is clean
+   ```
+
+### Versioning Conventions
+
+- **Patch Releases (`v1.6.x`)**: Backward-compatible bug fixes, minor internal optimizations, and documentation fixes.
+- **Minor Releases (`v1.x.0`)**: Backward-compatible new features, CLI subcommands (`query`, `path`, `explain`), or AST auditor enhancements.
+- **Major Releases (`vX.0.0`)**: Breaking public API changes in `internal/auditor/types.go` or storage contracts.
+
+### Tag Inspection & Listing
+
+```bash
+# View existing tags sorted by semantic version
+git tag --sort=-v:refname
+
+# Verify the current tag on HEAD
+git describe --tags --exact-match
+```
 
 ---
 
 ## 🔗 Related Documentation
-- [Master Documentation Index](../../docs/INDEX.md)
-- [Graphify System Rules](../../.agents/rules/graphify.md)
-- [AST Auditor Architecture Blueprint](../../docs/specs/062-graphify-ast-code-auditor-cli-workflow-synchronization-architecture-blueprint.md)
-- [Doc Graph Auditor Architecture Blueprint](../../docs/specs/059-markdown-doc-graph-auditor-architecture-blueprint.md)
+- [Product & Architecture Roadmap](./docs/roadmap/roadmap.md)
+- [Graphify System Rules](./.agents/rules/graphify.md)
+- [Encapsulated Graphify Binary Runner Blueprint](./docs/specs/001-encapsulated-graphify-binary-runner-architecture-blueprint.md)
+- [Consumer Graphify Query Infrastructure Blueprint](./docs/specs/006-consumer-graphify-query-infrastructure-architecture-blueprint.md)

@@ -16,7 +16,7 @@ To prevent **context rot** and token bloat:
 ---
 
 ## 🕸️ MANDATORY GRAPHIFY KNOWLEDGE GRAPH DISCOVERY (TOKEN OPTIMIZATION)
-Before performing raw file reads or broad greps across the repository, the Phase 1 persona team MUST query `graphify query "<feature concept>"`, `graphify path "<A>" "<B>"`, `graphify explain "<concept>"`, or navigate `graphify-out/wiki/index.md` to extract existing package boundaries, AST structures, interfaces, and storage paths with minimal token consumption.
+Before performing raw file reads or broad greps across the repository, the Phase 1 persona team MUST query `gautama-graph query "<feature concept>"` (or `make graphify-query Q="<feature concept>"`), `gautama-graph path "<A>" "<B>"` (or `make graphify-path A="<A>" B="<B>"`), `gautama-graph explain "<concept>"` (or `make graphify-explain C="<concept>"`), or navigate `graphify-out/wiki/index.md` to extract existing package boundaries, AST structures, interfaces, and storage paths with minimal token consumption.
 
 ---
 

@@ -8,8 +8,8 @@ description: Consult and synchronize the Graphify knowledge graph at graphify-ou
 This project maintains a deterministic knowledge graph and documentation topology at `graphify-out/`.
 
 ## 1. Graph Discovery First (Token Optimization)
-- For codebase, relationship, or architecture questions when `graphify-out/graph.json` exists, **first** run `graphify query "<question>"` (CLI) or `query_graph` (MCP).
-- Use `graphify path "<A>" "<B>"` / `shortest_path` for call chains and `graphify explain "<concept>"` / `get_node` for focused symbol definitions. These return a scoped subgraph, minimizing token consumption compared to raw file reads or greps.
+- For codebase, relationship, or architecture questions when `graphify-out/graph.json` exists, **first** run `gautama-graph query "<question>"` (or `make graphify-query Q="<question>"`) or `query_graph` (MCP).
+- Use `gautama-graph path "<A>" "<B>"` (or `make graphify-path A="<A>" B="<B>"`) / `shortest_path` for call chains and `gautama-graph explain "<concept>"` (or `make graphify-explain C="<concept>"`) / `get_node` for focused symbol definitions. These return a scoped subgraph, minimizing token consumption compared to raw file reads or greps.
 - If `graphify-out/wiki/index.md` exists, navigate it instead of reading raw files.
 - Read `graphify-out/GRAPH_REPORT.md` only for broad architecture review or when query/path/explain do not surface sufficient context.
 

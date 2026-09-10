@@ -20,8 +20,8 @@ To prevent token bloat:
 
 ## 🕸️ Mandatory Graphify Knowledge Graph Discovery (Token Optimization)
 Before performing raw file reads, the roadmap team MUST query:
-- `graphify query "<subsystem>"` to inspect existing packages, interfaces, and modules.
-- `graphify path "<A>" "<B>"` to trace dependencies across components.
+- `gautama-graph query "<subsystem>"` (or `make graphify-query Q="<subsystem>"`) to inspect existing packages, interfaces, and modules.
+- `gautama-graph path "<A>" "<B>"` (or `make graphify-path A="<A>" B="<B>"`) to trace dependencies across components.
 - Navigate `graphify-out/wiki/index.md` or query graph concepts to map subsystem architecture with minimal token overhead.
 
 ---

@@ -16,7 +16,7 @@ To prevent **context rot** and token bloat:
 ---
 
 ## 🕸️ MANDATORY GRAPHIFY DISCOVERY & POST-IMPLEMENTATION SYNC
-1. **Graphify Discovery (Token Optimization)**: Query `graphify query "<feature>"` or `graphify explain` to locate exact symbol definitions and package boundaries before editing code.
+1. **Graphify Discovery (Token Optimization)**: Query `gautama-graph query "<feature>"` (or `make graphify-query Q="<feature>"`) or `gautama-graph explain` to locate exact symbol definitions and package boundaries before editing code.
 2. **Post-Implementation Sync**: After modifying code, the agent team MUST run `make graphify-update` or `graphify update .` to update graph nodes and verify graph integrity (`graphify-out/graph.json`).
 
 ---

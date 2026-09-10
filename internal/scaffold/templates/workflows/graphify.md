@@ -5,7 +5,30 @@ description: Turn any folder of files into a navigable knowledge graph with auto
 
 # Workflow: graphify
 
-This project utilizes `github.com/jameshawkins-art/gautama-graph` v1.5.0 for turnkey knowledge graph orchestration, deep AST cross-package verification, and markdown doc link auditing.
+This project utilizes `github.com/jameshawkins-art/gautama-graph` v1.7.0 for turnkey knowledge graph orchestration, deep AST cross-package verification, and markdown doc link auditing.
+
+## Knowledge Graph Querying (Zero-Host-Dependency)
+
+1. **Semantic Question Traversal (BFS/DFS)**:
+   ```bash
+   make graphify-query Q="<question>"
+   # Or directly via CLI:
+   gautama-graph query "<question>" [--dfs] [--budget 2000]
+   ```
+
+2. **Shortest Topological Path Between Two Symbols**:
+   ```bash
+   make graphify-path A="<symbol1>" B="<symbol2>"
+   # Or directly via CLI:
+   gautama-graph path "<symbol1>" "<symbol2>"
+   ```
+
+3. **Plain-Language Symbol & Neighborhood Explanation**:
+   ```bash
+   make graphify-explain C="<concept>"
+   # Or directly via CLI:
+   gautama-graph explain "<concept>"
+   ```
 
 ## Turnkey Execution
 
@@ -30,3 +53,4 @@ This project utilizes `github.com/jameshawkins-art/gautama-graph` v1.5.0 for tur
 4. **Standalone Audits**:
    - `make audit-docs`: Sub-second doc graph validation (`cmd/graphify-doc-audit -strict`).
    - `make audit-ast`: Go AST code relationship validation (`cmd/graphify-ast-audit`).
+

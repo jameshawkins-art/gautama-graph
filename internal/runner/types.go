@@ -89,3 +89,73 @@ type OrchestratorService interface {
 	// RunPipeline coordinates Download -> Base Extraction -> AST Audit -> Doc Graph Audit.
 	RunPipeline(ctx context.Context, cfg RunnerConfig) (*PipelineReport, error)
 }
+
+// QueryOptions configures semantic and question-based graph traversal queries.
+type QueryOptions struct {
+	// WorkspaceRoot specifies the project root directory (defaults to current working directory).
+	WorkspaceRoot string `json:"workspace_root"`
+
+	// GraphPath overrides the default graph location (defaults to graphify-out/graph.json).
+	GraphPath string `json:"graph_path,omitempty"`
+
+	// DFS enables depth-first search traversal instead of breadth-first search.
+	DFS bool `json:"dfs"`
+
+	// Context specifies repeatable edge-context filter tags.
+	Context []string `json:"context,omitempty"`
+
+	// BudgetTokens caps the maximum token output volume (defaults to 2000).
+	BudgetTokens int `json:"budget_tokens"`
+
+	// JSONOutput instructs the query engine to emit raw JSON data.
+	JSONOutput bool `json:"json_output"`
+}
+
+// PathOptions configures shortest-path topological graph queries between two nodes.
+type PathOptions struct {
+	// WorkspaceRoot specifies the project root directory (defaults to current working directory).
+	WorkspaceRoot string `json:"workspace_root"`
+
+	// GraphPath overrides the default graph location (defaults to graphify-out/graph.json).
+	GraphPath string `json:"graph_path,omitempty"`
+}
+
+// ExplainOptions configures plain-language explanation queries for a target node and neighborhood.
+type ExplainOptions struct {
+	// WorkspaceRoot specifies the project root directory (defaults to current working directory).
+	WorkspaceRoot string `json:"workspace_root"`
+
+	// GraphPath overrides the default graph location (defaults to graphify-out/graph.json).
+	GraphPath string `json:"graph_path,omitempty"`
+}
+
+// QueryResult encapsulates the raw output, execution duration, and metadata for a completed query.
+type QueryResult struct {
+	// Output contains the stdout string produced by the graph traversal.
+	Output string `json:"output"`
+
+	// BinarySource indicates how the runner resolved the binary ("cached", "system-path", "downloaded").
+	BinarySource string `json:"binary_source"`
+
+	// BinaryVersion indicates the release tag or version identifier of the executed binary.
+	BinaryVersion string `json:"binary_version"`
+
+	// Duration records total execution time.
+	Duration time.Duration `json:"duration"`
+
+	// WorkspaceRoot is the canonical workspace path against which the query was resolved.
+	WorkspaceRoot string `json:"workspace_root"`
+}
+
+// QueryService coordinates knowledge graph querying via the encapsulated Graphify binary.
+type QueryService interface {
+	// Query executes a BFS or DFS question traversal across the knowledge graph.
+	Query(ctx context.Context, question string, opts QueryOptions) (*QueryResult, error)
+
+	// Path finds the shortest topological path between two nodes in the knowledge graph.
+	Path(ctx context.Context, nodeA, nodeB string, opts PathOptions) (*QueryResult, error)
+
+	// Explain generates a plain-language explanation of a node and its adjacent neighborhood.
+	Explain(ctx context.Context, concept string, opts ExplainOptions) (*QueryResult, error)
+}
+

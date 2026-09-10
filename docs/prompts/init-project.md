@@ -22,7 +22,7 @@ Your goal is to inspect the project's `README.md`, existing codebase topology, c
    - Core programming languages, runtimes, and frameworks.
    - Key subsystems, directories, and entrypoints.
    - Testing frameworks, linters, security tools, and CI commands.
-2. **Topology Mapping**: Run `graphify query "<core concepts>"` or inspect the filesystem to confirm package layouts and file locations.
+2. **Topology Mapping**: Run `gautama-graph query "<core concepts>"` (or `make graphify-query Q="<core concepts>"`) or inspect the filesystem to confirm package layouts and file locations.
 
 ---
 

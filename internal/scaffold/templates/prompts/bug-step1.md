@@ -16,7 +16,7 @@ To prevent **context rot** and token bloat:
 ---
 
 ## 🕸️ MANDATORY GRAPHIFY KNOWLEDGE GRAPH DISCOVERY (TOKEN OPTIMIZATION)
-The triage team MUST query `graphify path "<Caller>" "<Callee>"`, `graphify explain "<type or function>"`, or `graphify query "<component>"` to locate exact error origin sites and upstream/downstream callers with minimal token overhead instead of broad greps.
+The triage team MUST query `gautama-graph path "<Caller>" "<Callee>"` (or `make graphify-path A="<Caller>" B="<Callee>"`), `gautama-graph explain "<type or function>"` (or `make graphify-explain C="<type or function>"`), or `gautama-graph query "<component>"` (or `make graphify-query Q="<component>"`) to locate exact error origin sites and upstream/downstream callers with minimal token overhead instead of broad greps.
 
 ---
 

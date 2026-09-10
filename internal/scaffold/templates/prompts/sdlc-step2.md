@@ -16,7 +16,7 @@ To prevent **context rot** and token bloat:
 ---
 
 ## 🕸️ MANDATORY GRAPHIFY KNOWLEDGE GRAPH MAPPING (TOKEN OPTIMIZATION)
-The Phase 2 blueprint team MUST query `graphify path "<A>" "<B>"`, `graphify explain "<concept>"`, or `graphify query "<package/interface>"` to construct clean interface contracts, caller hierarchies, and storage paths with minimal token consumption instead of reading raw files.
+The Phase 2 blueprint team MUST query `gautama-graph path "<A>" "<B>"` (or `make graphify-path A="<A>" B="<B>"`), `gautama-graph explain "<concept>"` (or `make graphify-explain C="<concept>"`), or `gautama-graph query "<package/interface>"` (or `make graphify-query Q="<package/interface>"`) to construct clean interface contracts, caller hierarchies, and storage paths with minimal token consumption instead of reading raw files.
 
 ---
 

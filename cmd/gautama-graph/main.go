@@ -15,18 +15,29 @@ import (
 func main() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
-		case "antigravity":
+		case "antigravity", "init":
 			if err := handleAntigravityCommand(os.Args[2:]); err != nil {
 				log.Fatalf("❌ Antigravity setup failed: %v", err)
 			}
 			return
-		case "init":
-			if err := handleAntigravityCommand(os.Args[2:]); err != nil {
-				log.Fatalf("❌ Init setup failed: %v", err)
+		case "query":
+			if err := handleQueryCommand(os.Args[2:]); err != nil {
+				log.Fatalf("❌ Query failed: %v", err)
+			}
+			return
+		case "path":
+			if err := handlePathCommand(os.Args[2:]); err != nil {
+				log.Fatalf("❌ Path query failed: %v", err)
+			}
+			return
+		case "explain":
+			if err := handleExplainCommand(os.Args[2:]); err != nil {
+				log.Fatalf("❌ Explain query failed: %v", err)
 			}
 			return
 		}
 	}
+
 
 	strictFlag := flag.Bool("strict", false, "Fail with non-zero exit code if phantom edges or doc issues exist")
 	workspaceFlag := flag.String("workspace", "", "Path to workspace root (defaults to CWD)")

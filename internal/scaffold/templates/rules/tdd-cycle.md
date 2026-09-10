@@ -31,7 +31,7 @@ All feature development (`sdlc-step3.md`) and bug remediation (`bug-step3.md`) i
 - **De-duplication (DRY)**: Search the workspace for any duplicate inline implementations of the new utility and refactor them to call the centralized function.
 - **AST Production Caller Verification**:
   - Verify that every newly declared function has **$\ge 1$ active call site in production non-test code** ($C_{prod} > 0$).
-  - Use `graphify query`, `graphify path`, or AST auditing tools (`make audit-ast`, `go run cmd/graphify-ast-audit/main.go`) to confirm verified AST caller edges.
+  - Use `gautama-graph query` (or `make graphify-query`), `gautama-graph path` (or `make graphify-path`), or AST auditing tools (`make audit-ast`, `go run cmd/graphify-ast-audit/main.go`) to confirm verified AST caller edges.
 - **Full Suite Regression & Graph Sync**:
   - Run the full workspace test suite (e.g. `go test -timeout 30s -v ./...`, `npm test`, `pytest`) to certify zero regressions or race conditions.
   - Run `make graphify-update` (or `./scripts/graphify_sync.sh`) to synchronize AST symbols and eliminate phantom edges.

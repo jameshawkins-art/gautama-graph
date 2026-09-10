@@ -68,3 +68,26 @@ func TestGautamaGraphCLI_AntigravityInstall_Execution(t *testing.T) {
 		t.Errorf("expected %s to exist on disk", makefilePath)
 	}
 }
+
+func TestHandleAntigravityCommand_InProcess(t *testing.T) {
+	tempDir := t.TempDir()
+	// Test dry run
+	err := handleAntigravityCommand([]string{"install", "--workspace=" + tempDir, "--dry-run"})
+	if err != nil {
+		t.Fatalf("expected dry-run to succeed, got %v", err)
+	}
+
+	// Test actual install
+	err = handleAntigravityCommand([]string{"install", "--workspace=" + tempDir, "--project"})
+	if err != nil {
+		t.Fatalf("expected project install to succeed, got %v", err)
+	}
+
+	// Test minimal install
+	minimalDir := t.TempDir()
+	err = handleAntigravityCommand([]string{"--workspace=" + minimalDir, "--minimal"})
+	if err != nil {
+		t.Fatalf("expected minimal install to succeed, got %v", err)
+	}
+}
+

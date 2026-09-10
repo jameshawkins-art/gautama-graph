@@ -19,7 +19,7 @@ To prevent **context rot** and token bloat:
 ---
 
 ## 🕸️ Mandatory Graphify Knowledge Graph Discovery (Token Optimization)
-Before performing raw file reads, the persona team MUST query `graphify query "<topic>"`, `graphify path "<A>" "<B>"`, or `graphify explain "<concept>"` to map target packages, existing interfaces, and storage paths with minimal token consumption.
+Before performing raw file reads, the persona team MUST query `gautama-graph query "<topic>"` (or `make graphify-query Q="<topic>"`), `gautama-graph path "<A>" "<B>"` (or `make graphify-path A="<A>" B="<B>"`), or `gautama-graph explain "<concept>"` (or `make graphify-explain C="<concept>"`) to map target packages, existing interfaces, and storage paths with minimal token consumption.
 
 ---
 

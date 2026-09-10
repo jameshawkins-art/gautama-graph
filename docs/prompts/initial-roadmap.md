@@ -22,9 +22,9 @@ To prevent token bloat:
 
 ## 🕸️ Mandatory Graphify Knowledge Graph Discovery (Token Optimization)
 Before performing raw file reads, the roadmap team MUST query:
-- `graphify query "AST"` to inspect existing engine packages and selector evaluators.
-- `graphify query "DocAuditor"` to inspect markdown link graph parsing.
-- `graphify path "<A>" "<B>"` to trace dependencies between `cmd/`, `internal/auditor/`, and `python/ast_auditor_bridge.py`.
+- `gautama-graph query "AST"` (or `make graphify-query Q="AST"`) to inspect existing engine packages and selector evaluators.
+- `gautama-graph query "DocAuditor"` (or `make graphify-query Q="DocAuditor"`) to inspect markdown link graph parsing.
+- `gautama-graph path "<A>" "<B>"` (or `make graphify-path A="<A>" B="<B>"`) to trace dependencies between `cmd/`, `internal/auditor/`, and `python/ast_auditor_bridge.py`.
 - Navigate `graphify-out/wiki/index.md` to map subsystem architecture with minimal token overhead.
 
 ---

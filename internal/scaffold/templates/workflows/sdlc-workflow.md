@@ -20,7 +20,7 @@ To prevent **context rot** and token bloat, each workflow step strictly isolates
 ## Step Execution Protocol
 
 ### Step 1: Feature Inception (`sdlc-step1`)
-- **Action**: `@nexus.md` invokes the feature engineer persona using `graphify query` to inspect existing symbol contracts.
+- **Action**: `@nexus.md` invokes the feature engineer persona using `gautama-graph query` (or `make graphify-query`) to inspect existing symbol contracts.
 - **Output**: Generates `docs/specs/<NNN>-<feature-name>-requirements.md` with interface specifications and acceptance criteria.
 
 ### Step 2: Implementation (`sdlc-step2`)

@@ -21,9 +21,9 @@ To prevent **context rot** and token bloat:
 
 ## 🕸️ Mandatory Graphify Knowledge Graph Scoping (Token Optimization)
 Before performing raw file reads or broad greps across the repository, the audit team MUST query:
-- `graphify query "<subsystem>"` to trace package dependencies and interface contracts.
-- `graphify path "<Caller>" "<Callee>"` to map invocation flows.
-- `graphify explain "<type or function>"` to analyze struct definitions and interface abstractions.
+- `gautama-graph query "<subsystem>"` (or `make graphify-query Q="<subsystem>"`) to trace package dependencies and interface contracts.
+- `gautama-graph path "<A>" "<B>"` (or `make graphify-path A="<A>" B="<B>"`) to inspect calling paths between subsystems.
+- `gautama-graph explain "<type or function>"` (or `make graphify-explain C="<type or function>"`) to analyze struct definitions and interface abstractions.
 - Navigate [graphify-out/wiki/index.md](../../graphify-out/wiki/index.md) to inspect community clusters and high-level architecture with minimal token overhead.
 
 ---

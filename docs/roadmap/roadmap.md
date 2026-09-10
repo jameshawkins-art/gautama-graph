@@ -43,6 +43,7 @@ flowchart LR
 | **003** | [Streaming AST IPC Bridge & Persistent Subprocess Daemon Pool](./streaming-ast-ipc-bridge-roadmap-003.md) | `@feature-engineer.md`, `@debugger-remediation.md` | Milestone 3 (V1.3.0) | `(🟢 COMPLETED V1.3.0)` |
 | **004** | [Markdown Doc Link Auto-Remediation & Circular Cycle Detector](./markdown-doc-link-auto-remediation-roadmap-004.md) | `@feature-engineer.md`, `@security-auditor.md` | Milestone 4 (V1.4.0) | `(🟢 COMPLETED V1.4.0)` |
 | **005** | [Antigravity Environment Scaffolder & Knowledge Setup CLI](./antigravity-environment-installer-roadmap-005.md) | `@feature-engineer.md`, `@security-auditor.md`, `@nexus.md` | Milestone 5 (V1.5.0) | `(🟢 COMPLETED V1.5.0)` |
+| **006** | [Consumer Graphify Query Infrastructure & Unified Agent Routing](./consumer-graphify-query-infrastructure-roadmap-006.md) | `@feature-engineer.md`, `@nexus.md`, `@security-auditor.md` | Milestone 6 (V1.7.0) | `(🟢 COMPLETED V1.7.0)` |
 
 ---
 
@@ -68,6 +69,10 @@ flowchart LR
 - **Specification Document**: [`docs/roadmap/antigravity-environment-installer-roadmap-005.md`](./antigravity-environment-installer-roadmap-005.md)
 - **Primary Goal**: Provide a turnkey setup and environment initialization command (`graphify antigravity install --project` / `gautama-graph antigravity install --project`) that uses Go embedded templates (`//go:embed`) to scaffold `.agents/rules/graphify.md`, `.agents/workflows/graphify.md`, `.agents/AGENTS.md` snippets, `scripts/graphify_sync.sh`, and `.gitignore` entries into any consumer workspace cleanly, idempotently, and securely.
 
+### Item 006: Consumer Graphify Query Infrastructure & Unified Agent Routing
+- **Specification Document**: [`docs/roadmap/consumer-graphify-query-infrastructure-roadmap-006.md`](./consumer-graphify-query-infrastructure-roadmap-006.md)
+- **Primary Goal**: Bridge the query infrastructure gap for consumer repositories by implementing first-class CLI query subcommands (`gautama-graph query`, `gautama-graph path`, `gautama-graph explain`) backed by an encapsulated runner query engine (`internal/runner/query.go`), adding standardized Makefile query targets (`make graphify-query Q="..."`, `make graphify-path A="..." B="..."`, `make graphify-explain C="..."`) to scaffold templates, and comprehensively updating all rules, workflows, personas, skills, and prompt templates across Gautama Graph and consumer workspaces to route 100% of graph discovery through `gautama-graph`.
+
 ---
 
 ## Architectural Subsystems Overview
@@ -79,17 +84,28 @@ internal/
 │   ├── parser.go        # Go file AST parser with boundary checks
 │   ├── evaluator.go     # ast.Inspect selector & call matcher
 │   ├── doc_auditor.go   # Markdown link topology & orphan detector
+│   ├── doc_remediator.go# Markdown link auto-remediator
 │   ├── python_bridge.go # Python AST analyzer subprocess bridge
 │   ├── store.go         # Atomic two-phase GraphStore (.tmp -> os.Rename)
 │   └── types.go         # Domain interfaces & data structures
-├── runner/              # [Planned 001] Encapsulated binary manager & release downloader
+├── runner/              # Encapsulated binary manager & release downloader
 │   ├── downloader.go    # GitHub release API client & binary cache manager
+│   ├── manager.go       # Local binary caching & validation
+│   ├── orchestrator.go  # 4-stage pipeline orchestrator
 │   ├── runner.go        # Multi-stage graphify execution orchestrator
-│   └── integrity.go     # SHA-256 & platform/arch validation
+│   ├── query.go         # [Planned 006] Encapsulated query engine & executor
+│   └── types.go         # Runner interfaces & data models
+├── scaffold/            # Turnkey Antigravity environment scaffolder
+│   ├── scaffolder.go    # Scaffolder engine & template deployment
+│   ├── templates/       # Embedded Antigravity 2.0 assets (rules, workflows, Makefile)
+│   └── types.go         # Scaffolder domain models
 cmd/
 ├── graphify-ast-audit/  # CLI entrypoint for AST relationship auditing
 ├── graphify-doc-audit/  # CLI entrypoint for Markdown link auditing
-└── gautama-graph/       # [Planned 001] Unified CLI for consumers
+└── gautama-graph/       # Unified CLI for consumers & orchestrator
+    ├── main.go          # Master CLI entrypoint
+    ├── antigravity.go   # Scaffolding subcommand handler
+    └── query.go         # [Planned 006] CLI query subcommands handler
 python/
 └── ast_auditor_bridge.py # Isolated Python AST visitor script
 scripts/

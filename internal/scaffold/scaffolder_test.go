@@ -103,7 +103,14 @@ func TestScaffolder_NominalInstallation(t *testing.T) {
 		t.Errorf("expected %s to exist on disk", makefilePath)
 	} else if !strings.Contains(string(content), "graphify-update:") {
 		t.Errorf("expected Makefile to contain graphify-update target")
+	} else if !strings.Contains(string(content), "graphify-query:") {
+		t.Errorf("expected Makefile to contain graphify-query target")
+	} else if !strings.Contains(string(content), "graphify-path:") {
+		t.Errorf("expected Makefile to contain graphify-path target")
+	} else if !strings.Contains(string(content), "graphify-explain:") {
+		t.Errorf("expected Makefile to contain graphify-explain target")
 	}
+
 
 	report, err := svc.Verify(ctx, tempDir)
 	if err != nil {
@@ -288,6 +295,16 @@ func TestScaffolder_MergeFiles(t *testing.T) {
 	if !strings.Contains(string(makefileContent), "graphify-update:") {
 		t.Errorf("expected graphify-update target to be appended to Makefile")
 	}
+	if !strings.Contains(string(makefileContent), "graphify-query:") {
+		t.Errorf("expected graphify-query target to be appended to Makefile")
+	}
+	if !strings.Contains(string(makefileContent), "graphify-path:") {
+		t.Errorf("expected graphify-path target to be appended to Makefile")
+	}
+	if !strings.Contains(string(makefileContent), "graphify-explain:") {
+		t.Errorf("expected graphify-explain target to be appended to Makefile")
+	}
+
 }
 
 func TestScaffolder_MinimalMode(t *testing.T) {

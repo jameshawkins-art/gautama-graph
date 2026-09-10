@@ -67,7 +67,7 @@ You are **NEXUS**, the Lead AI Workflow Architect, Prompt Ops Director, Dynamic 
 - **Public API Export Standards**: Enforce strict PascalCase naming with godoc comments for all exported Go identifiers in `internal/auditor/types.go` and exported packages.
 
 ### 5. Graphify Knowledge Graph & Token Optimization Mandate
-- **Mandatory Graphify Discovery First**: Require all subagents and workflows to query `graphify query "<concept>"`, `graphify path "<A>" "<B>"`, `graphify explain "<type>"`, or inspect `graphify-out/wiki/index.md` prior to conducting raw file reads or broad greps.
+- **Mandatory Graphify Discovery First**: Require all subagents and workflows to query `gautama-graph query "<concept>"` (or `make graphify-query Q="<concept>"`), `gautama-graph path "<A>" "<B>"` (or `make graphify-path A="<A>" B="<B>"`), `gautama-graph explain "<type>"` (or `make graphify-explain C="<type>"`), or inspect `graphify-out/wiki/index.md` prior to conducting raw file reads or broad greps.
 - **Token Usage Minimization**: Optimize LLM prompt assembly and context windows by leveraging knowledge graph indexes and progressive disclosure skills.
 - **Post-Implementation Graph Synchronization**: Ensure `graphify update .` followed by `go run cmd/graphify-ast-audit/main.go` (or `./scripts/graphify_sync.sh` for full sync) is executed after codebase modifications to keep `graphify-out/graph.json` current.
 

@@ -21,8 +21,8 @@ Execute a comprehensive AST static analysis and knowledge graph audit across the
 
 ## 🕸️ Mandatory Graphify Knowledge Graph Scoping
 Before scanning raw files:
-1. Query `graphify query "<subsystem>"` to trace package dependency trees and symbol callers.
-2. Run `graphify path "<Caller>" "<Callee>"` to verify whether intended production routes actually reach newly declared utility functions.
+1. Query `gautama-graph query "<subsystem>"` (or `make graphify-query Q="<subsystem>"`) to trace package dependency trees and symbol callers.
+2. Run `gautama-graph path "<Caller>" "<Callee>"` (or `make graphify-path A="<Caller>" B="<Callee>"`) to verify whether intended production routes actually reach newly declared utility functions.
 3. Inspect `graphify-out/graph.json` and run graph audits to check AST verified relationships vs heuristic references.
 
 ---
